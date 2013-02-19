@@ -74,12 +74,14 @@
   };
 
   var getLineItem = function(item){
-    return [item['Agency Name'], item['Bureau Name'], item['Account Name']];
+    return {"agency_name" : item['Agency Name'],
+            "bureau_name" : item['Bureau Name'],
+            "name" : item['Account Name']};
   };
 
   var getYearlyLineItem = function(item, year){
     var line_item_cost = getLineItem(item);
-    line_item_cost.push(item[year]);
+    line_item_cost.size = parseInt(item[year].replace(',',''));
     return line_item_cost;
   };
 
@@ -88,5 +90,46 @@
       function(x) { return getYearlyLineItem(x, year)}
     );
     return yearly_budget;
+  };
+
+  var getYearlyData = function(year){
+    var d = getNestedData(year);
+
+    var data = _.map(d, function(val , key){
+      var agencyChildren = getAgencyChildren(val);
+      return {
+        "name" : key,
+        "children" : agencyChildren,
+        "size" : _.reduce(agencyChildren, function(sum, num){
+        return sum + num.size;},0)
+      };
+    });
+
+    return data;
+  };
+
+  var getNestedData = function(year){
+    var data2 = d3.nest()
+      .key(function(d) {return d['agency_name'];})
+      .key(function(d) {return d['bureau_name'];})
+        //.rollup(function(leaves) { return {
+          //"length" :leaves.length,
+          //"size" : d3.sum(leaves, function(d){return parseInt(d[year]);})
+           //} })
+      .map(getYearlyExpenses(year));
+    return data2;
+  };
+
+  var getAgencyChildren = function(r){
+   var agency_children = _.map(r, function(val, key){
+     return {
+       "name" : key,
+       "children" : val,
+       "size" : _.reduce(val, function(sum, num){
+         return sum + num.size;}, 0)
+     };
+   });
+
+   return agency_children;
   };
 //});
