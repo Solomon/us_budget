@@ -1,4 +1,5 @@
 //$(document).ready(function(){
+// http://bost.ocks.org/mike/treemap/
   var w = 1280 - 80,
       h = 800 - 180,
       x = d3.scale.linear().range([0, w]),
@@ -31,47 +32,9 @@
       line_items.push(data);
     });
 
-    node = root = csv;
-    getYearlyInfo('2010');
+    //node = root = csv;
   });
 
-  var getYearlyInfo = function(year) {
-
-    var agencyName = d3.nest()
-      .key(function(d) {return d['Agency Name'];})
-      .rollup(function(leaves) { return {
-        "length" :leaves.length,
-        "size" : d3.sum(leaves, function(d){return parseInt(d[year]);}),
-        "children" : leaves } })
-      .map(node);
-
-    var bureauName = d3.nest()
-      .key(function(d) {return d['Agency Name'];})
-      .key(function(d) {return d['Bureau Name'];})
-        .rollup(function(leaves) { return {
-          "length" :leaves.length,
-          "size" : d3.sum(leaves, function(d){return parseInt(d[year]);}),
-          "children" : leaves } })
-      .map(node);
-
-
-    var nodes = treemap.nodes(root);
-
-    var cell = svg.selectAll("g")
-      .data(nodes)
-      .enter().append("svg:g")
-
-    cell.append("svg:rect")
-      .attr("x", Math.random() * 1000)
-      .attr("y", Math.random() * 600)
-
-    return bureauName;
-  };
-
-
-  var getField = function(item, field){
-    return item[field];
-  };
 
   var getLineItem = function(item){
     return {"agency_name" : item['Agency Name'],
@@ -105,17 +68,13 @@
       };
     });
 
-    return data;
+    return {"name" : "us_budget", "children" :data};
   };
 
   var getNestedData = function(year){
     var data2 = d3.nest()
       .key(function(d) {return d['agency_name'];})
       .key(function(d) {return d['bureau_name'];})
-        //.rollup(function(leaves) { return {
-          //"length" :leaves.length,
-          //"size" : d3.sum(leaves, function(d){return parseInt(d[year]);})
-           //} })
       .map(getYearlyExpenses(year));
     return data2;
   };
@@ -132,4 +91,50 @@
 
    return agency_children;
   };
+
+  var nodes = treemap.nodes(getYearlyData('2010').children)
+
+  var cell = svg.selectAll("g")
+      .data(nodes)
+    .enter().append("svg:g")
+      .attr("class", "cell")
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+      //.on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
+
+  cell.append("svg:rect")
+      .attr("width", function(d) { return d.dx - 1; })
+      .attr("height", function(d) { return d.dy - 1; })
+      .style("fill", function(d) { return color(d.name); });
+
+  cell.append("svg:text")
+      .attr("x", function(d) { return d.dx / 2; })
+      .attr("y", function(d) { return d.dy / 2; })
+      .attr("dy", ".35em")
+      .attr("text-anchor", "middle")
+      .text(function(d) { return d.name; })
+      .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
+
+  var size = function(d){return d.size;};
+
+  var zoom = function(d) {
+    var kx = w / d.dx, ky = h / d.dy;
+    x.domain([d.x, d.x + d.dx]);
+    y.domain([d.y, d.y + d.dy]);
+
+    var t = svg.selectAll("g.cell").transition()
+        .duration(d3.event.altKey ? 7500 : 750)
+        .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+
+    t.select("rect")
+        .attr("width", function(d) { return kx * d.dx - 1; })
+        .attr("height", function(d) { return ky * d.dy - 1; })
+
+    t.select("text")
+        .attr("x", function(d) { return kx * d.dx / 2; })
+        .attr("y", function(d) { return ky * d.dy / 2; })
+        .style("opacity", function(d) { return kx * d.dx > d.w ? 1 : 0; });
+
+    node = d;
+    d3.event.stopPropagation();
+  }
 //});
