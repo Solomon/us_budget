@@ -1,39 +1,20 @@
 //$(document).ready(function(){
-// http://bost.ocks.org/mike/treemap/
-  var w = 1280 - 80,
-      h = 800 - 180,
-      x = d3.scale.linear().range([0, w]),
-      y = d3.scale.linear().range([0, h]),
-      color = d3.scale.category20c(),
-      root,
-      node;
-
-  var treemap = d3.layout.treemap()
-      .round(false)
-      .size([w, h])
-      .sticky(true)
-      .value(function(d) { return d.size; });
-
-  var svg = d3.select("body").append("div")
-      .attr("class", "chart")
-      .style("width", w + "px")
-      .style("height", h + "px")
-    .append("svg:svg")
-      .attr("width", w)
-      .attr("height", h)
-    .append("svg:g")
-      .attr("transform", "translate(.5,.5)");
 
 
 
-  line_items = []
-  d3.csv('/us_budget_expenses_2013.csv', function(csv){
-    $.each(csv, function(row, data){
-      line_items.push(data);
+  var loadLineItems = function(){
+    var items = []
+    d3.csv('/us_budget_expenses_2013.csv', function(csv){
+      $.each(csv, function(row, data){
+        items.push(data);
+      });
+
+      //node = root = csv;
     });
+    return items;
+  };
 
-    //node = root = csv;
-  });
+  line_items = loadLineItems();
 
 
   var getLineItem = function(item){
@@ -62,13 +43,16 @@
       var agencyChildren = getAgencyChildren(val);
       return {
         "name" : key,
-        "children" : agencyChildren,
+        //"children" : agencyChildren,
         "size" : _.reduce(agencyChildren, function(sum, num){
         return sum + num.size;},0)
       };
     });
 
-    return {"name" : "us_budget", "children" :data};
+    var sortedData = _.sortBy(data, function(d){return -1 * d.size; });
+
+    return {"name" : "us_budget", "children" : sortedData};
+    //return data;
   };
 
   var getNestedData = function(year){
@@ -83,7 +67,7 @@
    var agency_children = _.map(r, function(val, key){
      return {
        "name" : key,
-       "children" : val,
+       //"children" : val,
        "size" : _.reduce(val, function(sum, num){
          return sum + num.size;}, 0)
      };
@@ -92,49 +76,80 @@
    return agency_children;
   };
 
-  var nodes = treemap.nodes(getYearlyData('2010').children)
+// http://bost.ocks.org/mike/treemap/
+  var setupVisual = function(){
+    var w = 1400,
+        h = 1200,
+        x = d3.scale.linear().range([0, w]),
+        y = d3.scale.linear().range([0, h]),
+        color = d3.scale.category20c(),
+        root,
+        node;
 
-  var cell = svg.selectAll("g")
-      .data(nodes)
-    .enter().append("svg:g")
-      .attr("class", "cell")
-      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-      //.on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
+    var treemap = d3.layout.treemap()
+        .round(false)
+        .size([w, h])
+        .sticky(true)
+        .value(function(d) { return d.size; });
 
-  cell.append("svg:rect")
-      .attr("width", function(d) { return d.dx - 1; })
-      .attr("height", function(d) { return d.dy - 1; })
-      .style("fill", function(d) { return color(d.name); });
+    var svg = d3.select("body").append("div")
+        .attr("class", "chart")
+        .style("width", w + "px")
+        .style("height", h + "px")
+      .append("svg:svg")
+        .attr("width", w)
+        .attr("height", h)
+      .append("svg:g")
+        .attr("transform", "translate(.5,.5)");
 
-  cell.append("svg:text")
-      .attr("x", function(d) { return d.dx / 2; })
-      .attr("y", function(d) { return d.dy / 2; })
-      .attr("dy", ".35em")
-      .attr("text-anchor", "middle")
-      .text(function(d) { return d.name; })
-      .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
+    var mainData = getYearlyData('2010');
+    console.log(mainData);
+    var nodes = treemap.nodes(mainData);
 
-  var size = function(d){return d.size;};
+    console.log(nodes);
 
-  var zoom = function(d) {
-    var kx = w / d.dx, ky = h / d.dy;
-    x.domain([d.x, d.x + d.dx]);
-    y.domain([d.y, d.y + d.dy]);
+    var cell = svg.selectAll("g")
+        .data(nodes)
+      .enter().append("svg:g")
+        .attr("class", "cell")
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+        .on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
 
-    var t = svg.selectAll("g.cell").transition()
-        .duration(d3.event.altKey ? 7500 : 750)
-        .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+    cell.append("svg:rect")
+        .attr("width", function(d) { return d.dx - 1; })
+        .attr("height", function(d) { return d.dy - 1; })
+        .style("fill", function(d) { return color(d.size); });
 
-    t.select("rect")
-        .attr("width", function(d) { return kx * d.dx - 1; })
-        .attr("height", function(d) { return ky * d.dy - 1; })
+    cell.append("svg:text")
+        .attr("x", function(d) { return d.dx / 2; })
+        .attr("y", function(d) { return d.dy / 2; })
+        .attr("dy", ".35em")
+        .attr("text-anchor", "middle")
+        .text(function(d) { return d.name; })
+        .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
 
-    t.select("text")
-        .attr("x", function(d) { return kx * d.dx / 2; })
-        .attr("y", function(d) { return ky * d.dy / 2; })
-        .style("opacity", function(d) { return kx * d.dx > d.w ? 1 : 0; });
+    var size = function(d){return d.size;};
 
-    node = d;
-    d3.event.stopPropagation();
-  }
+    var zoom = function(d) {
+      var kx = w / d.dx, ky = h / d.dy;
+      x.domain([d.x, d.x + d.dx]);
+      y.domain([d.y, d.y + d.dy]);
+
+      var t = svg.selectAll("g.cell").transition()
+          .duration(d3.event.altKey ? 7500 : 750)
+          .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+
+      t.select("rect")
+          .attr("width", function(d) { return kx * d.dx - 1; })
+          .attr("height", function(d) { return ky * d.dy - 1; })
+
+      t.select("text")
+          .attr("x", function(d) { return kx * d.dx / 2; })
+          .attr("y", function(d) { return ky * d.dy / 2; })
+          .style("opacity", function(d) { return kx * d.dx > d.w ? 1 : 0; });
+
+      node = d;
+      d3.event.stopPropagation();
+    }
+  };
 //});
