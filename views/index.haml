@@ -1,4 +1,9 @@
 %h2 US Budget
+- (1980..2013).each do |y|
+  %p.year= y.to_s
+
+<div class='agency'></div>
+<div class='bureau'></div>
 <div id='us_budget'></div>
 <div id='chart'></div>
 
