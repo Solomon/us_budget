@@ -1,13 +1,25 @@
-%h2 US Budget
-- (1980..2013).each do |y|
-  %p.year= y.to_s
-
-<div class='agency'></div>
-<div class='bureau'></div>
-<div id='us_budget'></div>
-<div id='chart'></div>
-
 %link{:rel => "stylesheet", :type => "text/css", :href => "style.css"}
+-#%link{:rel => "stylesheet", :type => "text/css", :href => "bootstrap.css"}
+
+%div.container
+  %div.top_nav
+    %div
+      %h2 US Budget
+
+    %ul.breadcrumb
+      %li.agency
+      %li.bureau
+
+  %div.year_picker
+    - (1980..2013).each do |y|
+      %p.year= y.to_s
+
+  %div#chart
+
+  %table.expenses
+
+    -#%ul.expense_list
+
 %script{:type => "text/javascript", :src => "jquery-1.9.1.min.js"}
 %script{:type => "text/javascript", :src => "d3.v3.min.js"}
 %script{:type => "text/javascript", :src => "underscore-min.js"}

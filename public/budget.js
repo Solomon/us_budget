@@ -26,6 +26,23 @@
     return line_item_cost;
   };
 
+  var getHistoricalLineItem = function(agencyName, bureauName, accountName){
+    var historical = [];
+    var row = _.findWhere(
+      line_items,
+      { 'Agency Name' : agencyName, 'Bureau Name' : bureauName, 'Account Name' : accountName}
+    );
+    var years = _.range(1980, 2013);
+    _.each(years, function(y){
+      var amount = row[y].replace(',','');
+      var year = '1/1/' + y;
+      var period = new Date(year);
+      console.log(period);
+      historical.push({"date" : period, "amount" : amount});
+    });
+    return historical;
+  };
+
   var getYearlyExpenses = function(year){
     var yearly_budget = line_items.map(
       function(x) { return getYearlyLineItem(x, year)}
@@ -33,6 +50,7 @@
 
     var noZeroSize = _.filter(yearly_budget, function(x){ return x.size > 0;});
     return noZeroSize;
+    //return yearly_budget;
   };
 
   var filterZeroSize = function(nestedData){
@@ -120,7 +138,7 @@
 
 // http://bost.ocks.org/mike/treemap/
   var setupVisual = function(visualData){
-    var w = 1200,
+    var w = 940,
         h = 600,
         x = d3.scale.linear().range([0, w]),
         y = d3.scale.linear().range([0, h]),
@@ -134,7 +152,7 @@
         .sticky(true)
         .value(function(d) { return d.size; });
 
-    var svg = d3.select("body").append("div")
+    var svg = d3.select("#chart").append("div")
         .attr("class", "chart")
         .style("width", w + "px")
         .style("height", h + "px")
@@ -144,8 +162,7 @@
       .append("svg:g")
         .attr("transform", "translate(.5,.5)");
 
-    var mainData = visualData;
-    var nodes = treemap.nodes(mainData);
+    var nodes = treemap.nodes(visualData);
 
     var cell = svg.selectAll("g")
         .data(nodes)
@@ -156,21 +173,22 @@
           $('.chart').remove();
           if(levelTracker === "budget"){
             $('.agency').html(d.name);
-            setupVisual(getYearlyAgency(yearTracker, d.name));
+            var chartData = getYearlyAgency(yearTracker, d.name);
           } else if(levelTracker === "agency"){
             $('.bureau').html(d.name);
-            setupVisual(getYearlyBureau(yearTracker, agencyTracker, d.name));
+            var chartData = getYearlyBureau(yearTracker, agencyTracker, d.name);
           } else {
             $('.agency').html('');
             $('.bureau').html('');
-            setupVisual(getTopLevelAgencies(yearTracker));
+            var chartData = getTopLevelAgencies(yearTracker);
           }
+          setupChartAndList(chartData);
         });
 
     cell.append("svg:rect")
         .attr("width", function(d) { return d.dx ; })
         .attr("height", function(d) { return d.dy ; })
-        .style("fill", function(d) { return color(d.size); });
+        .style("fill", function(d) { return color(d.size * Math.random()); });
 
     cell.append("svg:text")
         .attr("x", function(d) { return d.dx / 2; })
@@ -191,8 +209,8 @@
         .text(function(d) {
           var msg = d.name;
           if(d.size){
-            msg += " : $";
-            msg += d.size.toFixed(0).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
+            msg += " : ";
+            msg += toDollar(d.size);
           }
           return msg;
         });
@@ -202,12 +220,32 @@
 
   };
 
+  var toDollar = function(d){
+    return "$" + d.toFixed(0).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
+  };
+
+  var setupChartAndList = function(d){
+    setupVisual(d);
+    populateExpenseList(d.children);
+  };
+
+  var populateExpenseList = function(f){
+    var expenseList = $('.expenses');
+    expenseList.children().remove();
+    var s = _.sortBy(f, function(n){ return -1 * n.size;});
+    _.each(s, function(e){
+      var expense = "<tr><td>" + e.name + "</td><td>" + toDollar(e.size) + "</td></tr>";
+      expenseList.append(expense);
+    });
+    var total = _.reduce(f, function(total, expense){return total + expense.size;},0);
+    expenseList.append("<tr><td>Total</td><td>" + toDollar(total) + "</td></tr>");
+  };
+
 
   $('.year').on("click", function(){
     $('.chart').remove();
     yearTracker = this.childNodes[0].textContent;
-    console.log(yearTracker);
     var d = getTopLevelAgencies(yearTracker);
-    setupVisual(d);
+    setupChartAndList(d);
   });
 //});

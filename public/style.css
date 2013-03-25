@@ -1,6 +1,42 @@
 .year {
   float: left;
-  margin: 8px;
+  margin: 8px 8px 8px 0;
+}
+
+.container {
+  width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.year_picker {
+  margin: 15px 0 15px 0;
+  height: 50px;
+}
+
+.breadcrumb {
+  padding: 0;
+}
+
+.breadcrumb li{
+  display: inline;
+  /*float: left;*/
+  text-decoration: none;
+  text-align: left;
+}
+
+.expenses {
+
+}
+
+#chart {
+  margin: 40px 0 15px 0;
+}
+
+.top_nav {
+  margin: 20px 0 20px 0;
+  width: 100%;
+  height: 50px;
 }
 
 
