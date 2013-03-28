@@ -1,2 +1,2 @@
-require '.budget'
+require './budget.rb'
 run Sinatra::Application
