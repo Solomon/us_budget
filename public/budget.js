@@ -33,16 +33,16 @@
 
   Budget.Expenses = {
 
-    getLineItem: function(item){
-      return {"agency_name" : item['Agency Name'],
-              "bureau_name" : item['Bureau Name'],
+    expenseOrigin: function(item){
+      return {"agencyName" : item['Agency Name'],
+              "bureauName" : item['Bureau Name'],
               "name" : item['Account Name']};
     },
 
     getYearlyLineItem: function(item, year){
-      var lineItemCost = this.getLineItem(item);
-      lineItemCost.size = parseInt(item[year].replace(',',''));
-      return lineItemCost;
+      var lineItem = this.expenseOrigin(item);
+      lineItem.size = parseInt(item[year].replace(',',''));
+      return lineItem;
     },
 
     getHistoricalLineItem: function(agencyName, bureauName, accountName){
@@ -64,13 +64,13 @@
 
     getYearlyExpenses: function(year){
       var expenses = this;
-      var yearly_budget = expenseLineItems.map(
+      var yearlyBudget = expenseLineItems.map(
         function(x) { return expenses.getYearlyLineItem(x, year)}
       );
 
-      var noZeroSize = _.filter(yearly_budget, function(x){ return x.size > 0;});
+      var noZeroSize = _.filter(yearlyBudget, function(x){ return x.size > 0;});
       //return noZeroSize;
-      return yearly_budget;
+      return yearlyBudget;
     },
 
     filterZeroSize: function(nestedData){
@@ -118,8 +118,8 @@
 
     getNestedData: function(year){
       var data2 = d3.nest()
-        .key(function(d) {return d['agency_name'];})
-        .key(function(d) {return d['bureau_name'];})
+        .key(function(d) {return d['agencyName'];})
+        .key(function(d) {return d['bureauName'];})
         .map(this.getYearlyExpenses(year));
       return data2;
     },
@@ -158,6 +158,38 @@
     },
   };
 
+  Budget.Receipts = {
+
+    receiptItem: function(item){
+      return {
+        "agencyName" : item["Agency name"],
+        "bureauName" : item["Bureau name"],
+        "name" : item["Account name"]
+      };
+    },
+
+    receiptForYear: function(receipt, year){
+      var receiptItem = this.receiptItem(receipt);
+      receiptItem.size = parseInt(receipt[year].replace(',',''));
+      return receiptItem;
+    },
+
+    yearlyReceipts: function(year){
+      var receipts = this;
+      return incomeLineItems.map(
+        function(x) { return receipts.receiptForYear(x,year); }
+      );
+    },
+
+    nestedReceipts: function(year){
+      var nestedReceipts = d3.nest()
+        .key(function(d) { return d['agencyName']; })
+        .key(function(d) { return d['bureauName']; })
+        .map(this.yearlyReceipts(year));
+      return nestedReceipts;
+    },
+
+  }
 
 // http://bost.ocks.org/mike/treemap/
   var setupVisual = function(visualData){
