@@ -41,7 +41,7 @@
 
     getYearlyLineItem: function(item, year){
       var lineItem = this.expenseOrigin(item);
-      lineItem.size = parseInt(item[year].replace(',',''));
+      lineItem.size = parseInt(item[year].replace(/\,/g,''));
       return lineItem;
     },
 
@@ -170,7 +170,7 @@
 
     receiptForYear: function(receipt, year){
       var receiptItem = this.receiptItem(receipt);
-      receiptItem.size = parseInt(receipt[year].replace(',',''));
+      receiptItem.size = parseInt(receipt[year].replace(/\,/g,''));
       return receiptItem;
     },
 
