@@ -3,7 +3,7 @@
   yearTracker = '2010';
 
   var loadExpenseLineItems = function(){
-    var items = []
+    var items = [];
     d3.csv('/us_budget_expenses_2013.csv', function(csv){
       $.each(csv, function(row, data){
         items.push(data);
@@ -13,7 +13,7 @@
   };
 
   var loadIncomeLineItems = function(){
-    var items = []
+    var items = [];
     d3.csv('/us_budget_revenues_2013.csv', function(csv){
       $.each(csv, function(row, data){
         items.push(data);
@@ -41,7 +41,7 @@
 
     getYearlyLineItem: function(item, year){
       var lineItem = this.expenseOrigin(item);
-      lineItem.size = parseInt(item[year].replace(/\,/g,''));
+      lineItem.size = parseInt(item[year].replace(/\,/g,''),10);
       return lineItem;
     },
 
@@ -65,7 +65,7 @@
     getYearlyExpenses: function(year){
       var expenses = this;
       var yearlyBudget = expenseLineItems.map(
-        function(x) { return expenses.getYearlyLineItem(x, year)}
+        function(x) { return expenses.getYearlyLineItem(x, year); }
       );
 
       var noZeroSize = _.filter(yearlyBudget, function(x){ return x.size > 0;});
@@ -145,7 +145,7 @@
       var w = _.where(d.children, { "name" : agency })[0];
       return {
         "name" : agency,
-        "children" : _.map(w.children, function(n){return _.pick(n, 'name', 'size')})
+        "children" : _.map(w.children, function(n){return _.pick(n, 'name', 'size');})
       };
     },
 
@@ -155,7 +155,7 @@
       var d = this.getYearlyData(year);
       var a = _.where(d.children, { "name" : agency })[0];
       return _.where(a.children, { "name" : bureau})[0];
-    },
+    }
   };
 
   Budget.Receipts = {
@@ -170,7 +170,7 @@
 
     receiptForYear: function(receipt, year){
       var receiptItem = this.receiptItem(receipt);
-      receiptItem.size = parseInt(receipt[year].replace(/\,/g,''));
+      receiptItem.size = parseInt(receipt[year].replace(/\,/g,''), 10);
       return receiptItem;
     },
 
@@ -189,7 +189,40 @@
       return nestedReceipts;
     },
 
-  }
+    agencyReceipts: function(year){
+      yearTracker = year;
+      levelTracker = "budget";
+      var receipts = this;
+      var d = this.nestedReceipts(year);
+
+      var data = _.map(d, function(val , key){
+        var agencyChildren = receipts.agencyChildren(val);
+        return {
+          "name" : key,
+          "size" : _.reduce(agencyChildren, function(sum, num){
+          return sum + num.size;},0)
+        };
+      });
+
+      var sortedData = _.sortBy(data, function(d){return -1 * d.size; });
+
+      return {"name" : "us_budget", "children" : sortedData};
+    },
+
+    agencyChildren: function(r){
+     var agency_children = _.map(r, function(val, key){
+       return {
+         "name" : key,
+         "parent" : r.name,
+         "children" : val,
+         "size" : _.reduce(val, function(sum, num){
+           return sum + num.size;}, 0)
+       };
+     });
+
+     return agency_children;
+    }
+  };
 
 // http://bost.ocks.org/mike/treemap/
   var setupVisual = function(visualData){
@@ -199,6 +232,7 @@
         y = d3.scale.linear().range([0, h]),
         color = d3.scale.category20c(),
         root,
+        chartData,
         node;
 
     var treemap = d3.layout.treemap()
@@ -228,14 +262,14 @@
           $('.chart').remove();
           if(levelTracker === "budget"){
             $('.agency').html(d.name);
-            var chartData = Budget.Expenses.getYearlyAgency(yearTracker, d.name);
+            chartData = Budget.Expenses.getYearlyAgency(yearTracker, d.name);
           } else if(levelTracker === "agency"){
             $('.bureau').html(d.name);
-            var chartData = Budget.Expenses.getYearlyBureau(yearTracker, agencyTracker, d.name);
+            chartData = Budget.Expenses.getYearlyBureau(yearTracker, agencyTracker, d.name);
           } else {
             $('.agency').html('');
             $('.bureau').html('');
-            var chartData = Budget.Expenses.getTopLevelAgencies(yearTracker);
+            chartData = Budget.Expenses.getTopLevelAgencies(yearTracker);
           }
           setupChartAndList(chartData);
         });
