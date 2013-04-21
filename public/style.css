@@ -14,6 +14,11 @@
   height: 50px;
 }
 
+.type_chooser {
+  margin: 15px 0 15px 0;
+  height: 50px;
+}
+
 .breadcrumb {
   padding: 0;
 }
