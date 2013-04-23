@@ -51,9 +51,22 @@
         expenseLineItems,
         { 'Agency Name' : agencyName, 'Bureau Name' : bureauName, 'Account Name' : accountName}
       );
+      var rows = _.filter(expenseLineItems, function(r){
+        if(typeof accountName !== "undefined"){
+          return r['Agency Name'] === agencyName && r['Bureau Name'] === bureauName && r['Account Name'] === accountName;
+        } else if(typeof bureauName !== "undefined"){
+          return r['Agency Name'] === agencyName && r['Bureau Name'] === bureauName;
+        } else if(typeof agencyName !== "undefined"){
+          return r['Agency Name'] === agencyName;
+        } else {
+          return false;
+        }
+      });
       var years = _.range(1980, 2013);
       _.each(years, function(y){
-        var amount = row[y].replace(',','');
+        var amount = _.reduce(rows,function(sum, r){
+          return sum + parseInt(r[y].replace(/\,/g,''), 10);
+        },0);
         var year = '1/1/' + y;
         var period = new Date(year);
         historical.push({"date" : period, "amount" : amount});
