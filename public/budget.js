@@ -45,7 +45,7 @@
       return lineItem;
     },
 
-    getHistoricalLineItem: function(agencyName, bureauName, accountName){
+    getHistorical: function(agencyName, bureauName, accountName){
       var historical = [];
       var row = _.findWhere(
         expenseLineItems,
@@ -171,6 +171,34 @@
   };
 
   Budget.Receipts = {
+    getHistorical: function(agencyName, bureauName, accountName){
+      var historical = [];
+      var row = _.findWhere(
+        incomeLineItems,
+        { 'Agency Name' : agencyName, 'Bureau Name' : bureauName, 'Account Name' : accountName}
+      );
+      var rows = _.filter(expenseLineItems, function(r){
+        if(typeof accountName !== "undefined"){
+          return r['Agency Name'] === agencyName && r['Bureau Name'] === bureauName && r['Account Name'] === accountName;
+        } else if(typeof bureauName !== "undefined"){
+          return r['Agency Name'] === agencyName && r['Bureau Name'] === bureauName;
+        } else if(typeof agencyName !== "undefined"){
+          return r['Agency Name'] === agencyName;
+        } else {
+          return false;
+        }
+      });
+      var years = _.range(1980, 2013);
+      _.each(years, function(y){
+        var amount = _.reduce(rows,function(sum, r){
+          return sum + parseInt(r[y].replace(/\,/g,''), 10);
+        },0);
+        var year = '1/1/' + y;
+        var period = new Date(year);
+        historical.push({"date" : period, "amount" : amount});
+      });
+      return historical;
+    },
 
     receiptItem: function(item){
       return {
@@ -278,7 +306,7 @@
 
   // http://bost.ocks.org/mike/treemap/
   Budget.Display = {
-    setupVisual: function(visualData){
+    setupTreemap: function(visualData){
       var w = 940,
           h = 600,
           x = d3.scale.linear().range([0, w]),
@@ -404,7 +432,7 @@
     },
 
     setupChartAndList: function(d){
-      this.setupVisual(d);
+      this.setupTreemap(d);
       this.populateList(d.children);
     },
 
@@ -415,6 +443,10 @@
       $('.summary_expenses').html("Expenses " + toDollar(expenses));
       $('.summary_receipts').html("Receipts " + toDollar(receipts));
       $('.summary_net').html("Net " + toDollar(net));
+    },
+
+    setupAreaChart: function(data){
+
     }
   };
 
