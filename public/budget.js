@@ -62,7 +62,7 @@
           return false;
         }
       });
-      var years = _.range(1980, 2013);
+      var years = _.range(1980, 2012);
       _.each(years, function(y){
         var amount = _.reduce(rows,function(sum, r){
           return sum + parseInt(r[y].replace(/\,/g,''), 10);
@@ -188,7 +188,7 @@
           return false;
         }
       });
-      var years = _.range(1980, 2013);
+      var years = _.range(1980, 2012);
       _.each(years, function(y){
         var amount = _.reduce(rows,function(sum, r){
           return sum + parseInt(r[y].replace(/\,/g,''), 10);
@@ -341,7 +341,7 @@
           .attr("class", "cell tooltip")
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
           .on("click", function(d) {
-            visual.updateChart(d);
+            visual.updateTreemap(d);
           });
 
       cell.append("svg:rect")
@@ -379,7 +379,7 @@
 
     },
 
-    updateChart: function(d){
+    updateTreemap: function(d){
       $('.chart').remove();
 
       var resetChart = function(){
@@ -416,7 +416,7 @@
           resetChart();
         }
       }
-      this.setupChartAndList(chartData);
+      this.setupTreemapAndList(chartData);
     },
 
     populateList: function(f){
@@ -431,7 +431,7 @@
       expenseList.append("<tr><td>Total</td><td>" + toDollar(total) + "</td></tr>");
     },
 
-    setupChartAndList: function(d){
+    setupTreemapAndList: function(d){
       this.setupTreemap(d);
       this.populateList(d.children);
     },
@@ -446,7 +446,79 @@
     },
 
     setupAreaChart: function(data){
+      var margin = {top: 20, right: 20, bottom: 30, left: 100},
+          width = 960 - margin.left - margin.right,
+          height = 500 - margin.top - margin.bottom;
 
+      var x = d3.time.scale()
+          .range([0, width]);
+
+      var y = d3.scale.linear()
+          .range([height, 0]);
+
+      var xAxis = d3.svg.axis()
+          .scale(x)
+          .orient("bottom");
+
+      var yAxis = d3.svg.axis()
+          .scale(y)
+          .orient("left");
+
+      var area = d3.svg.area()
+          .x(function(d) { return x(d.date); })
+          .y0(height)
+          .y1(function(d) { return y(d.amount); });
+
+      var svg = d3.select("#area_graph").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      x.domain(d3.extent(data, function(d) { return d.date; }));
+      y.domain([0, d3.max(data, function(d) { return d.amount; })]);
+
+      svg.append("path")
+          .datum(data)
+          .attr("class", "area")
+          .attr("d", area);
+
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis)
+        .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .text("Thousands ($)");
+    },
+
+    updateAreaChart: function(i){
+      $('#area_graph svg').remove();
+
+      if(typeTracker === "receipts") {
+        if(levelTracker === "budget") {
+          this.setupAreaChart(Budget.Receipts.getHistorical(i));
+        } else if(levelTracker === "agency") {
+          this.setupAreaChart(Budget.Receipts.getHistorical(agencyTracker, i));
+        } else {
+          this.setupAreaChart(Budget.Receipts.getHistorical(agencyTracker, bureauTracker, i));
+        }
+      } else {
+        if(levelTracker === "budget") {
+          this.setupAreaChart(Budget.Expenses.getHistorical(i));
+        } else if(levelTracker === "agency") {
+          this.setupAreaChart(Budget.Expenses.getHistorical(agencyTracker, i));
+        } else {
+          this.setupAreaChart(Budget.Expenses.getHistorical(agencyTracker, bureauTracker, i));
+        }
+      }
     }
   };
 
@@ -467,12 +539,16 @@
     $('.chart').remove();
     yearTracker = this.childNodes[0].textContent;
     Budget.Display.populateYearlySummary(yearTracker);
-    Budget.Display.updateChart();
+    Budget.Display.updateTreemap();
   });
 
   $('.type_chooser ul li').on("click", function(){
     $('.chart').remove();
     typeTracker = this.textContent.toLowerCase();
-    Budget.Display.updateChart();
+    Budget.Display.updateTreemap();
+  });
+
+  $(document).on("click",".expense_table tr", function(){
+    Budget.Display.updateAreaChart(this.firstChild.textContent);
   });
 //});

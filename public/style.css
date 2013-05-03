@@ -44,6 +44,10 @@
   height: 50px;
 }
 
+.area {
+  fill: #0CD5BF;
+}
+
 
 .tooltip {
   border-bottom: 1px dotted #000000;
