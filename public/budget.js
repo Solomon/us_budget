@@ -341,7 +341,7 @@
           .attr("class", "cell tooltip")
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
           .on("click", function(d) {
-            visual.updateTreemap(d);
+            visual.updateTreemap(d.name);
           });
 
       cell.append("svg:rect")
@@ -379,7 +379,7 @@
 
     },
 
-    updateTreemap: function(d){
+    updateTreemap: function(name){
       $('.chart').remove();
 
       var resetChart = function(){
@@ -393,25 +393,25 @@
         }
       };
 
-      if(typeof levelTracker === "undefined" || typeof d === "undefined"){
+      if(typeof levelTracker === "undefined" || typeof name === "undefined"){
         resetChart();
       } else if(typeTracker === "expenses"){
         if(levelTracker === "budget"){
-          $('.agency').html(d.name);
-          chartData = Budget.Expenses.getYearlyAgency(yearTracker, d.name);
+          $('.agency').html(name);
+          chartData = Budget.Expenses.getYearlyAgency(yearTracker, name);
         } else if(levelTracker === "agency"){
-          $('.bureau').html(d.name);
-          chartData = Budget.Expenses.getYearlyBureau(yearTracker, agencyTracker, d.name);
+          $('.bureau').html(name);
+          chartData = Budget.Expenses.getYearlyBureau(yearTracker, agencyTracker, name);
         } else {
           resetChart();
         }
       } else if(typeTracker === "receipts"){
         if(levelTracker === "budget"){
-          $('.agency').html(d.name);
-          chartData = Budget.Receipts.agencyReceipts(yearTracker, d.name);
+          $('.agency').html(name);
+          chartData = Budget.Receipts.agencyReceipts(yearTracker, name);
         } else if(levelTracker === "agency"){
-          $('.bureau').html(d.name);
-          chartData = Budget.Receipts.bureauReceipts(yearTracker, agencyTracker, d.name);
+          $('.bureau').html(name);
+          chartData = Budget.Receipts.bureauReceipts(yearTracker, agencyTracker, name);
         } else {
           resetChart();
         }
@@ -548,7 +548,27 @@
     Budget.Display.updateTreemap();
   });
 
-  $(document).on("click",".expense_table tr", function(){
-    Budget.Display.updateAreaChart(this.firstChild.textContent);
+  // $(document).on("click",".expense_table tr", function(){
+  //   Budget.Display.updateAreaChart(this.firstChild.textContent);
+  // });
+
+  // $(document).on("dblclick", "expense_table tr", function(){
+  //   Budget.Display.updateTreemap(this.firstChild.textContent);
+  // });
+
+  var table_row_clicks = 0;
+  $(document).on("click", ".expense_table tr", function(e) {
+    var that = this;
+    table_row_clicks++;
+    if(table_row_clicks === 1){
+      setTimeout(function(){
+        if(table_row_clicks === 1){
+          Budget.Display.updateAreaChart(that.firstChild.textContent);
+        } else {
+          Budget.Display.updateTreemap(that.firstChild.textContent);
+        }
+        table_row_clicks = 0;
+      }, 300);
+    }
   });
 //});
