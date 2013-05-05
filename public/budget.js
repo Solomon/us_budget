@@ -1,57 +1,106 @@
 //$(document).ready(function(){
 
-  yearTracker = '2010';
-
-  var loadExpenseLineItems = function(){
-    var items = [];
-    d3.csv('/us_budget_expenses_2013.csv', function(csv){
-      $.each(csv, function(row, data){
-        items.push(data);
-      });
-    });
-    return items;
-  };
-
-  var loadIncomeLineItems = function(){
-    var items = [];
-    d3.csv('/us_budget_revenues_2013.csv', function(csv){
-      $.each(csv, function(row, data){
-        items.push(data);
-      });
-    });
-    return items;
-  };
-
-
-
-  expenseLineItems = loadExpenseLineItems();
-  incomeLineItems = loadIncomeLineItems();
-
   Budget = {};
 
-  Budget = Budget || {};
+  Budget.Init = {
+
+    /*
+    * Initialize everything the app needs
+    * Load the expense and income line item global variables
+    */
+    setup: function(){
+      yearTracker = '2010';
+      inflationTracker = false;
+      this.loadExpenseLineItems();
+      this.loadIncomeLineItems();
+    },
+
+    /*
+    * Adjust an array of line items and return the same line items with the values for the years adjusted for inflation
+    * Needs an inflationDivisor object with values for how much to divide each year to get the correct inflation
+    * Base currently year is 1980
+    */
+    adjustForInflation: function(lineItems){
+      var inflation = [];
+      var inflationDivisor = {
+        '1980': '1', '1981': '1.03', '1982': '1.061', '1983': '1.093', '1984': '1.126', '1985': '1.159', '1986': '1.194', '1987': '1.23', '1988': '1.267', '1989': '1.305', '1990': '1.344', '1991': '1.384', '1992': '1.426', '1993': '1.469', '1994': '1.513', '1995': '1.558', '1996': '1.605', '1997': '1.653', '1998': '1.702', '1999': '1.754', '2000': '1.806', '2001': '1.86', '2002': '1.916', '2003': '1.974', '2004': '2.033', '2005': '2.094', '2006': '2.157', '2007': '2.221', '2008': '2.288', '2009': '2.357', '2010': '2.427', '2011': '2.5', '2012': '2.575', '2013': '2.652', '2014': '2.652', '2015': '2.652', '2016': '2.652', '2017': '2.652'
+      };
+      var years = _.range(1976, 2018);
+      _.each(lineItems, function(i){
+          var l = JSON.parse(JSON.stringify(i));
+        _.each(years, function(y){
+          l[y] = l[y].replace(/\,/g,'') / inflationDivisor[y];
+          l[y] = Math.round(l[y]).toString();
+        });
+        inflation.push(l);
+      });
+      return inflation;
+    },
+
+    /*
+    * Set up the global variables of expenseLineItem and inflationExpenseItems from the budget expenses csv
+    */
+    loadExpenseLineItems: function(){
+      var items = [];
+      var that = this;
+      d3.csv('/us_budget_expenses_2013.csv', function(csv){
+        $.each(csv, function(row, data){
+          items.push(data);
+        });
+        expenseLineItems = items;
+        inflationExpenseItems = that.adjustForInflation(items);
+      });
+    },
+
+    /*
+    * Set up the global variables for income line items and inflation adjusted from the budged receipts csv
+    */
+    loadIncomeLineItems: function(){
+      var items = [];
+      var that = this;
+      d3.csv('/us_budget_revenues_2013.csv', function(csv){
+        $.each(csv, function(row, data){
+          items.push(data);
+        });
+        incomeLineItems = items;
+        inflationIncomeItems = that.adjustForInflation(items);
+      });
+    }
+  };
+
 
   Budget.Expenses = {
 
+    /*
+    * Get the agency, bureau, and account name from a single line item
+    */
     expenseOrigin: function(item){
       return {"agencyName" : item['Agency Name'],
               "bureauName" : item['Bureau Name'],
               "name" : item['Account Name']};
     },
 
+    /*
+    * Takes a single line item and year, and returns the data necessary for the treemap
+    * Namely: the agencyName, Bureau Name, Account Name, and amount for the year
+    */
     getYearlyLineItem: function(item, year){
       var lineItem = this.expenseOrigin(item);
       lineItem.size = parseInt(item[year].replace(/\,/g,''),10);
       return lineItem;
     },
 
+    /*
+    * Gets the historical amounts for a set of line items for use in the area chart
+    * takes required agencyName, but bureauName and accountName are optional
+    * Returns an array of objects with dates and amounts, which can be graphed
+    * If you pass agencyName = "Department of Agriculture", it will return the total sum
+    * of all dept of agriculture expenses between 1980 and 2012 each year
+    */
     getHistorical: function(agencyName, bureauName, accountName){
       var historical = [];
-      var row = _.findWhere(
-        expenseLineItems,
-        { 'Agency Name' : agencyName, 'Bureau Name' : bureauName, 'Account Name' : accountName}
-      );
-      var rows = _.filter(expenseLineItems, function(r){
+      var expenseItems = inflationTracker ? inflationExpenseItems : expenseLineItems;
+      var rows = _.filter(expenseItems, function(r){
         if(typeof accountName !== "undefined"){
           return r['Agency Name'] === agencyName && r['Bureau Name'] === bureauName && r['Account Name'] === accountName;
         } else if(typeof bureauName !== "undefined"){
@@ -62,7 +111,7 @@
           return false;
         }
       });
-      var years = _.range(1980, 2012);
+      var years = _.range(1980, 2013);
       _.each(years, function(y){
         var amount = _.reduce(rows,function(sum, r){
           return sum + parseInt(r[y].replace(/\,/g,''), 10);
@@ -76,17 +125,11 @@
 
     getYearlyExpenses: function(year){
       var expenses = this;
-      var yearlyBudget = expenseLineItems.map(
+      var expenseItems = inflationTracker ? inflationExpenseItems : expenseLineItems;
+      var yearlyBudget = expenseItems.map(
         function(x) { return expenses.getYearlyLineItem(x, year); }
       );
-
-      var noZeroSize = _.filter(yearlyBudget, function(x){ return x.size > 0;});
-      //return noZeroSize;
       return yearlyBudget;
-    },
-
-    filterZeroSize: function(nestedData){
-
     },
 
     getYearlyData: function(year){
@@ -173,22 +216,19 @@
   Budget.Receipts = {
     getHistorical: function(agencyName, bureauName, accountName){
       var historical = [];
-      var row = _.findWhere(
-        incomeLineItems,
-        { 'Agency Name' : agencyName, 'Bureau Name' : bureauName, 'Account Name' : accountName}
-      );
-      var rows = _.filter(expenseLineItems, function(r){
+      var incomeItems = inflationTracker ? inflationIncomeItems : incomeLineItems;
+      var rows = _.filter(incomeItems, function(r){
         if(typeof accountName !== "undefined"){
-          return r['Agency Name'] === agencyName && r['Bureau Name'] === bureauName && r['Account Name'] === accountName;
+          return r['Agency name'] === agencyName && r['Bureau name'] === bureauName && r['Account name'] === accountName;
         } else if(typeof bureauName !== "undefined"){
-          return r['Agency Name'] === agencyName && r['Bureau Name'] === bureauName;
+          return r['Agency name'] === agencyName && r['Bureau name'] === bureauName;
         } else if(typeof agencyName !== "undefined"){
-          return r['Agency Name'] === agencyName;
+          return r['Agency name'] === agencyName;
         } else {
           return false;
         }
       });
-      var years = _.range(1980, 2012);
+      var years = _.range(1980, 2013);
       _.each(years, function(y){
         var amount = _.reduce(rows,function(sum, r){
           return sum + parseInt(r[y].replace(/\,/g,''), 10);
@@ -216,7 +256,8 @@
 
     yearlyReceipts: function(year){
       var receipts = this;
-      return incomeLineItems.map(
+      var incomeItems = inflationTracker ? inflationIncomeItems : incomeLineItems;
+      return incomeItems.map(
         function(x) { return receipts.receiptForYear(x,year); }
       );
     },
@@ -533,7 +574,7 @@
     },0);
   };
 
-
+  Budget.Init.setup();
 
   $('.year').on("click", function(){
     $('.chart').remove();
@@ -548,14 +589,6 @@
     Budget.Display.updateTreemap();
   });
 
-  // $(document).on("click",".expense_table tr", function(){
-  //   Budget.Display.updateAreaChart(this.firstChild.textContent);
-  // });
-
-  // $(document).on("dblclick", "expense_table tr", function(){
-  //   Budget.Display.updateTreemap(this.firstChild.textContent);
-  // });
-
   var table_row_clicks = 0;
   $(document).on("click", ".expense_table tr", function(e) {
     var that = this;
@@ -568,7 +601,7 @@
           Budget.Display.updateTreemap(that.firstChild.textContent);
         }
         table_row_clicks = 0;
-      }, 300);
+      }, 200);
     }
   });
 //});
