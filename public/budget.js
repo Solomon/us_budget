@@ -1,4 +1,4 @@
-//$(document).ready(function(){
+$(document).ready(function(){
 
   Budget = {};
 
@@ -589,6 +589,14 @@
     Budget.Display.updateTreemap();
   });
 
+  $('.inflation_chooser li').on("click", function(){
+    if (this.textContent === "Inflation Adjusted") {
+      inflationTracker = true;
+    } else {
+      inflationTracker = false;
+    }
+  });
+
   var table_row_clicks = 0;
   $(document).on("click", ".expense_table tr", function(e) {
     var that = this;
@@ -604,4 +612,4 @@
       }, 200);
     }
   });
-//});
+});
