@@ -584,17 +584,21 @@ $(document).ready(function(){
   });
 
   $('.type_chooser ul li').on("click", function(){
+    $(this).addClass('active').siblings().removeClass('active');
+
     $('.chart').remove();
     typeTracker = this.textContent.toLowerCase();
     Budget.Display.updateTreemap();
   });
 
   $('.inflation_chooser li').on("click", function(){
+    $(this).addClass('active').siblings().removeClass('active');
     if (this.textContent === "Inflation Adjusted") {
       inflationTracker = true;
     } else {
       inflationTracker = false;
     }
+    Budget.Display.updateTreemap();
   });
 
   var table_row_clicks = 0;

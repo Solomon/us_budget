@@ -1,5 +1,4 @@
 %link{:rel => "stylesheet", :type => "text/css", :href => "style.css"}
--#%link{:rel => "stylesheet", :type => "text/css", :href => "bootstrap.css"}
 
 %div.container
   %div.top_nav
@@ -14,22 +13,23 @@
     - (1980..2013).each do |y|
       %p.year= y.to_s
 
-  %div.yearly_summary
+  %div.yearly_summary.span12
     %p.summary_receipts
     %p.summary_expenses
     %p.summary_net
 
-  %div.type_chooser
-    %ul.breadcrumb
-      %li.chooser Expenses
-      %li.chooser Receipts
+  .type_and_inflation_chooser.span12
+    .type_chooser
+      %ul.breadcrumb
+        %li.chooser.expense_chooser.active Expenses
+        %li.chooser.receipts_chooser Receipts
 
-  .inflation_chooser
-    %ul
-      %li Normal
-      %li Inflation Adjusted
+    .inflation_chooser
+      %ul.breadcrumb
+        %li.normal_currency.active Normal
+        %li.inflation_adjusted Inflation Adjusted
 
-  %div#chart
+  %div#chart.span12
 
   %div#area_graph
 
