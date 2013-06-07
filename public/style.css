@@ -71,12 +71,10 @@
 
 .tooltip {
   background: white;
-  width: 350px;
-  height: 100px;
   font-size: 20px;
   padding: 10px;
   border: 1px solid black;
-
+  text-align: center;
 }
 
 .type_and_inflation_chooser {

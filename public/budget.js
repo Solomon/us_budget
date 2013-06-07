@@ -392,7 +392,10 @@ $(document).ready(function(){
           .on("click", function(d) {
             visual.updateTreemap(d.name);
           })
-          .on("mouseover", function(){ tooltip.text($(this).text()); return tooltip.style("visibility", "visible");})
+          .on("mouseover", function(){
+            tooltip.html($(this).text().replace(":","<br/>"));
+            return tooltip.style("visibility", "visible");
+          })
           .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+20)+"px");})
           .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
