@@ -358,6 +358,14 @@ $(document).ready(function(){
           node,
           visual = this;
 
+      var tooltip = d3.select("#chart")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .text("a simple tooltip");
+
       var treemap = d3.layout.treemap()
           .round(false)
           .size([w, h])
@@ -383,7 +391,10 @@ $(document).ready(function(){
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
           .on("click", function(d) {
             visual.updateTreemap(d.name);
-          });
+          })
+          .on("mouseover", function(){ tooltip.text($(this).text()); return tooltip.style("visibility", "visible");})
+          .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+20)+"px");})
+          .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
       cell.append("svg:rect")
           .attr("width", function(d) { return d.dx ; })
@@ -403,17 +414,17 @@ $(document).ready(function(){
             }
             return msg;
           })
-          .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
+          .style("visibility", "hidden");
 
-      cell.append("svg:title")
-          .text(function(d) {
-            var msg = d.name;
-            if(d.size){
-              msg += " : ";
-              msg += toDollar(d.size);
-            }
-            return msg;
-          });
+      // cell.append("svg:title")
+      //     .text(function(d) {
+      //       var msg = d.name;
+      //       if(d.size){
+      //         msg += " : ";
+      //         msg += toDollar(d.size);
+      //       }
+      //       return msg;
+      //     });
 
       var size = function(d){return d.size;};
 
@@ -421,7 +432,8 @@ $(document).ready(function(){
     },
 
     updateTreemap: function(name){
-      $('.chart').remove();
+      // $('.chart').remove();
+      this.removeChart();
 
       var resetChart = function(){
         $('.agency').html('');
@@ -560,6 +572,11 @@ $(document).ready(function(){
           this.setupAreaChart(Budget.Expenses.getHistorical(agencyTracker, bureauTracker, i));
         }
       }
+    },
+
+    removeChart: function(){
+      $('.chart').remove();
+      $('.tooltip').remove();
     }
   };
 
@@ -577,7 +594,8 @@ $(document).ready(function(){
   Budget.Init.setup();
 
   $('.year').on("click", function(){
-    $('.chart').remove();
+    // $('.chart').remove();
+    Budget.Display.removeChart();
     yearTracker = this.childNodes[0].textContent;
     Budget.Display.populateYearlySummary(yearTracker);
     Budget.Display.updateTreemap();
@@ -586,7 +604,8 @@ $(document).ready(function(){
   $('.type_chooser ul li').on("click", function(){
     $(this).addClass('active').siblings().removeClass('active');
 
-    $('.chart').remove();
+    // $('.chart').remove();
+    Budget.Display.removeChart();
     typeTracker = this.textContent.toLowerCase();
     Budget.Display.updateTreemap();
   });
@@ -613,7 +632,7 @@ $(document).ready(function(){
           Budget.Display.updateTreemap(that.firstChild.textContent);
         }
         table_row_clicks = 0;
-      }, 200);
+      }, 300);
     }
   });
 });
