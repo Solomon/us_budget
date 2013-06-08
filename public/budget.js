@@ -525,10 +525,18 @@ $(document).ready(function(){
           .y0(height)
           .y1(function(d) { return y(d.amount); });
 
+      var tooltip = d3.select("#area_graph")
+          .append("div")
+          .attr("class", "tooltip")
+          .style("position", "absolute")
+          .style("z-index", "10")
+          .style("visibility", "hidden")
+          .text("a simple tooltip");
+
       var svg = d3.select("#area_graph").append("svg")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
-        .append("g")
+          .append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       x.domain(d3.extent(data, function(d) { return d.date; }));
@@ -537,7 +545,29 @@ $(document).ready(function(){
       svg.append("path")
           .datum(data)
           .attr("class", "area")
-          .attr("d", area);
+          .attr("d", area)
+          .text('simple');
+
+      svg.selectAll("area")
+          .data(data)
+        .enter().append("circle")
+          .attr("r", 4)
+          .attr("cx", function(d) { return x(d.date); })
+          .attr("cy", function(d) { return y(d.amount); })
+          .attr("text", function(d){
+            var msg = d.date.getFullYear().toString();
+            if(d.amount){
+              msg += " - $";
+              msg += d.amount.toFixed(0).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
+            }
+            return msg;
+          })
+          .on("mouseover", function(){
+            tooltip.html(this.getAttribute("text"));
+            return tooltip.style("visibility", "visible");
+          })
+          .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+20)+"px");})
+          .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
       svg.append("g")
           .attr("class", "x axis")
@@ -547,7 +577,7 @@ $(document).ready(function(){
       svg.append("g")
           .attr("class", "y axis")
           .call(yAxis)
-        .append("text")
+          .append("text")
           .attr("transform", "rotate(-90)")
           .attr("y", 6)
           .attr("dy", ".71em")
