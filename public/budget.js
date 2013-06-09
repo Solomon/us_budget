@@ -123,6 +123,10 @@ $(document).ready(function(){
       return historical;
     },
 
+    /*
+    * Returns the agency name, bureau name, expense name and amount for all expense
+    * line items in the provided year.
+    */
     getYearlyExpenses: function(year){
       var expenses = this;
       var expenseItems = inflationTracker ? inflationExpenseItems : expenseLineItems;
@@ -132,6 +136,15 @@ $(document).ready(function(){
       return yearlyBudget;
     },
 
+    /*
+    * Get all the nested data for a given year. Everything has name, size, and children
+    * attributes.
+    *
+    * At the top level is named "us_budget" and has all 214 agencies as children
+    * The agencies each have a name, size, and have all the bureaus as children
+    * The bureaus have a name and size and have the individual expenses as children
+    * The individual expenses have a name and size
+    */
     getYearlyData: function(year){
       var d = this.getNestedData(year);
       var expenses = this;
@@ -151,6 +164,11 @@ $(document).ready(function(){
       return {"name" : "us_budget", "children" : sortedData};
     },
 
+    /*
+    * This returns the us budget object with the top level agencies as children
+    * However, the agencies themselves do not include children. They only have
+    * name and size attributes.
+    */
     getTopLevelAgencies: function(year){
       yearTracker = year;
       levelTracker = "budget";
@@ -360,7 +378,7 @@ $(document).ready(function(){
 
       var tooltip = d3.select("#chart")
         .append("div")
-        .attr("class", "tooltip")
+        .attr("class", "tooltip treemapTooltip")
         .style("position", "absolute")
         .style("z-index", "10")
         .style("visibility", "hidden")
@@ -419,23 +437,10 @@ $(document).ready(function(){
           })
           .style("visibility", "hidden");
 
-      // cell.append("svg:title")
-      //     .text(function(d) {
-      //       var msg = d.name;
-      //       if(d.size){
-      //         msg += " : ";
-      //         msg += toDollar(d.size);
-      //       }
-      //       return msg;
-      //     });
-
       var size = function(d){return d.size;};
-
-
     },
 
     updateTreemap: function(name){
-      // $('.chart').remove();
       this.removeChart();
 
       var resetChart = function(){
@@ -550,10 +555,12 @@ $(document).ready(function(){
 
       svg.selectAll("area")
           .data(data)
-        .enter().append("circle")
-          .attr("r", 4)
-          .attr("cx", function(d) { return x(d.date); })
-          .attr("cy", function(d) { return y(d.amount); })
+        .enter().append("svg:rect")
+          .attr("x", function(d){ return x(d.date); })
+          .attr("y", 0)
+          .attr("height", height)
+          .attr("width", "30px")
+          .style("opacity", "0")
           .attr("text", function(d){
             var msg = d.date.getFullYear().toString();
             if(d.amount){
@@ -563,6 +570,7 @@ $(document).ready(function(){
             return msg;
           })
           .on("mouseover", function(){
+            console.log(this);
             tooltip.html(this.getAttribute("text"));
             return tooltip.style("visibility", "visible");
           })
@@ -609,7 +617,7 @@ $(document).ready(function(){
 
     removeChart: function(){
       $('.chart').remove();
-      $('.tooltip').remove();
+      $('.treemapTooltip').remove();
     }
   };
 
@@ -627,7 +635,6 @@ $(document).ready(function(){
   Budget.Init.setup();
 
   $('.year').on("click", function(){
-    // $('.chart').remove();
     Budget.Display.removeChart();
     yearTracker = this.childNodes[0].textContent;
     Budget.Display.populateYearlySummary(yearTracker);
@@ -637,7 +644,6 @@ $(document).ready(function(){
   $('.type_chooser ul li').on("click", function(){
     $(this).addClass('active').siblings().removeClass('active');
 
-    // $('.chart').remove();
     Budget.Display.removeChart();
     typeTracker = this.textContent.toLowerCase();
     Budget.Display.updateTreemap();
