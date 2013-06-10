@@ -9,8 +9,6 @@ $(document).ready(function(){
     * Load the expense and income line item global variables
     */
     setup: function(){
-      yearTracker = '2010';
-      inflationTracker = false;
       this.loadExpenseLineItems();
       this.loadIncomeLineItems();
     },
@@ -68,6 +66,123 @@ $(document).ready(function(){
     }
   };
 
+  Budget.State = {
+    yearTracker: '2011',
+    typeTracker: "expenses",
+    inflationTracker: false,
+
+    treemapLevelName: function(){
+      if(typeof this.bureauTracker !== "undefined"){
+        return this.bureauTracker;
+      } else if(typeof this.agencyTracker !== "undefined"){
+        return this.agencyTracker;
+      } else {
+        return false;
+      }
+    },
+
+    atBudgetLevel: function(){
+      if(typeof this.levelTracker === "undefined" || this.levelTracker === "budget"){
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    resetState: function(){
+      this.removeTrackers();
+      if(this.typeTracker === 'expenses'){
+        this.levelTracker = "budget";
+        return Budget.Expenses.getTopLevelAgencies(yearTracker);
+      } else {
+        this.levelTracker = "budget";
+        return Budget.Receipts.budgetReceipts(yearTracker);
+      }
+    },
+
+    removeTrackers: function(){
+      $('.agency').html('');
+      $('.bureau').html('');
+      delete this.lastItem;
+      delete this.levelTracker;
+      delete this.agencyTracker;
+      delete this.bureauTracker;
+    },
+
+    treemapDataFromState: function(name, noAdvance){
+      this.lastItem = name;
+
+      if(typeof noAdvance === "undefined"){
+        this.advanceLevel(name);
+      }
+
+      if(typeof this.levelTracker === "undefined" || typeof name === "undefined"){
+        return this.resetState();
+      } else if(this.typeTracker === "expenses"){
+        return this.treemapExpenseData(name);
+      } else if(this.typeTracker === "receipts"){
+        return this.treemapReceiptData(name);
+      }
+    },
+
+    advanceLevel: function(name){
+      if(this.levelTracker === "budget"){
+        $('.agency').html(name);
+        this.levelTracker = "agency";
+        this.agencyTracker = name;
+      } else if(this.levelTracker === "agency"){
+        $('.bureau').html(name);
+        this.levelTracker = "bureau";
+        this.bureauTracker = name;
+      } else {
+        this.levelTracker = "budget";
+      }
+    },
+
+    treemapExpenseData: function(name){
+      if(this.levelTracker === "agency"){
+        return Budget.Expenses.getYearlyAgency(yearTracker, name);
+      } else if(this.levelTracker === "bureau"){
+        return Budget.Expenses.getYearlyBureau(yearTracker, this.agencyTracker, name);
+      } else {
+        return this.resetState();
+      }
+    },
+
+    treemapReceiptData: function(name){
+      if(this.levelTracker === "agency"){
+        return Budget.Receipts.agencyReceipts(yearTracker, name);
+      } else if(this.levelTracker === "bureau"){
+        return Budget.Receipts.bureauReceipts(yearTracker, this.agencyTracker, name);
+      } else {
+        return this.resetState();
+      }
+    },
+
+    areaGraphData: function(name){
+      if(this.typeTracker === "receipts") {
+        if(this.levelTracker === "budget") {
+          return Budget.Receipts.getHistorical(name);
+        } else if(this.levelTracker === "agency") {
+          return Budget.Receipts.getHistorical(this.agencyTracker, name);
+        } else {
+          return Budget.Receipts.getHistorical(this.agencyTracker, this.bureauTracker, name);
+        }
+      } else {
+        if(this.levelTracker === "budget") {
+          return Budget.Expenses.getHistorical(name);
+        } else if(this.levelTracker === "agency") {
+          return Budget.Expenses.getHistorical(this.agencyTracker, name);
+        } else {
+          return Budget.Expenses.getHistorical(this.agencyTracker, this.bureauTracker, name);
+        }
+      }
+
+    }
+
+
+  };
+
 
   Budget.Expenses = {
 
@@ -99,7 +214,7 @@ $(document).ready(function(){
     */
     getHistorical: function(agencyName, bureauName, accountName){
       var historical = [];
-      var expenseItems = inflationTracker ? inflationExpenseItems : expenseLineItems;
+      var expenseItems = Budget.State.inflationTracker ? inflationExpenseItems : expenseLineItems;
       var rows = _.filter(expenseItems, function(r){
         if(typeof accountName !== "undefined"){
           return r['Agency Name'] === agencyName && r['Bureau Name'] === bureauName && r['Account Name'] === accountName;
@@ -129,7 +244,7 @@ $(document).ready(function(){
     */
     getYearlyExpenses: function(year){
       var expenses = this;
-      var expenseItems = inflationTracker ? inflationExpenseItems : expenseLineItems;
+      var expenseItems = Budget.State.inflationTracker ? inflationExpenseItems : expenseLineItems;
       var yearlyBudget = expenseItems.map(
         function(x) { return expenses.getYearlyLineItem(x, year); }
       );
@@ -170,8 +285,6 @@ $(document).ready(function(){
     * name and size attributes.
     */
     getTopLevelAgencies: function(year){
-      yearTracker = year;
-      levelTracker = "budget";
       var expenses = this;
       var d = this.getNestedData(year);
 
@@ -212,8 +325,6 @@ $(document).ready(function(){
     },
 
     getYearlyAgency: function(year, agency){
-      levelTracker = "agency";
-      agencyTracker = agency;
       var d = this.getYearlyData(year);
       var w = _.where(d.children, { "name" : agency })[0];
       return {
@@ -223,8 +334,6 @@ $(document).ready(function(){
     },
 
     getYearlyBureau: function(year, agency, bureau){
-      levelTracker = "bureau";
-      bureauTracker = bureau;
       var d = this.getYearlyData(year);
       var a = _.where(d.children, { "name" : agency })[0];
       return _.where(a.children, { "name" : bureau})[0];
@@ -234,7 +343,7 @@ $(document).ready(function(){
   Budget.Receipts = {
     getHistorical: function(agencyName, bureauName, accountName){
       var historical = [];
-      var incomeItems = inflationTracker ? inflationIncomeItems : incomeLineItems;
+      var incomeItems = Budget.State.inflationTracker ? inflationIncomeItems : incomeLineItems;
       var rows = _.filter(incomeItems, function(r){
         if(typeof accountName !== "undefined"){
           return r['Agency name'] === agencyName && r['Bureau name'] === bureauName && r['Account name'] === accountName;
@@ -274,7 +383,7 @@ $(document).ready(function(){
 
     yearlyReceipts: function(year){
       var receipts = this;
-      var incomeItems = inflationTracker ? inflationIncomeItems : incomeLineItems;
+      var incomeItems = Budget.State.inflationTracker ? inflationIncomeItems : incomeLineItems;
       return incomeItems.map(
         function(x) { return receipts.receiptForYear(x,year); }
       );
@@ -308,8 +417,6 @@ $(document).ready(function(){
     },
 
     budgetReceipts: function(year){
-      yearTracker = year;
-      levelTracker = "budget";
       var receipts = this;
       var d = this.nestedReceipts(year);
 
@@ -328,8 +435,6 @@ $(document).ready(function(){
     },
 
     agencyReceipts: function(year, agency){
-      levelTracker = "agency";
-      agencyTracker = agency;
       var d = this.receiptsData(year);
       var w = _.where(d.children, { "name" : agency })[0];
       return {
@@ -339,8 +444,6 @@ $(document).ready(function(){
     },
 
     bureauReceipts: function(year, agency, bureau){
-      levelTracker = "bureau";
-      bureauTracker = bureau;
       var d = this.receiptsData(year);
       var a = _.where(d.children, { "name" : agency })[0];
       return _.where(a.children, { "name" : bureau})[0];
@@ -440,43 +543,10 @@ $(document).ready(function(){
       var size = function(d){return d.size;};
     },
 
-    updateTreemap: function(name){
+    updateTreemap: function(name, noAdvance){
       this.removeChart();
-
-      var resetChart = function(){
-        $('.agency').html('');
-        $('.bureau').html('');
-        if(typeof typeTracker === 'undefined' || typeTracker === 'expenses'){
-          typeTracker = 'expenses';
-          chartData = Budget.Expenses.getTopLevelAgencies(yearTracker);
-        } else {
-          chartData = Budget.Receipts.budgetReceipts(yearTracker);
-        }
-      };
-
-      if(typeof levelTracker === "undefined" || typeof name === "undefined"){
-        resetChart();
-      } else if(typeTracker === "expenses"){
-        if(levelTracker === "budget"){
-          $('.agency').html(name);
-          chartData = Budget.Expenses.getYearlyAgency(yearTracker, name);
-        } else if(levelTracker === "agency"){
-          $('.bureau').html(name);
-          chartData = Budget.Expenses.getYearlyBureau(yearTracker, agencyTracker, name);
-        } else {
-          resetChart();
-        }
-      } else if(typeTracker === "receipts"){
-        if(levelTracker === "budget"){
-          $('.agency').html(name);
-          chartData = Budget.Receipts.agencyReceipts(yearTracker, name);
-        } else if(levelTracker === "agency"){
-          $('.bureau').html(name);
-          chartData = Budget.Receipts.bureauReceipts(yearTracker, agencyTracker, name);
-        } else {
-          resetChart();
-        }
-      }
+      this.removeAreaChart();
+      var chartData = Budget.State.treemapDataFromState(name, noAdvance);
       this.setupTreemapAndList(chartData);
     },
 
@@ -570,7 +640,6 @@ $(document).ready(function(){
             return msg;
           })
           .on("mouseover", function(){
-            console.log(this);
             tooltip.html(this.getAttribute("text"));
             return tooltip.style("visibility", "visible");
           })
@@ -593,26 +662,14 @@ $(document).ready(function(){
           .text("Thousands ($)");
     },
 
-    updateAreaChart: function(i){
-      $('#area_graph svg').remove();
+    updateAreaChart: function(name){
+      this.removeAreaChart();
+      var chartData = Budget.State.areaGraphData(name);
+      this.setupAreaChart(chartData);
+    },
 
-      if(typeTracker === "receipts") {
-        if(levelTracker === "budget") {
-          this.setupAreaChart(Budget.Receipts.getHistorical(i));
-        } else if(levelTracker === "agency") {
-          this.setupAreaChart(Budget.Receipts.getHistorical(agencyTracker, i));
-        } else {
-          this.setupAreaChart(Budget.Receipts.getHistorical(agencyTracker, bureauTracker, i));
-        }
-      } else {
-        if(levelTracker === "budget") {
-          this.setupAreaChart(Budget.Expenses.getHistorical(i));
-        } else if(levelTracker === "agency") {
-          this.setupAreaChart(Budget.Expenses.getHistorical(agencyTracker, i));
-        } else {
-          this.setupAreaChart(Budget.Expenses.getHistorical(agencyTracker, bureauTracker, i));
-        }
-      }
+    removeAreaChart: function(){
+      $('#area_graph svg').remove();
     },
 
     removeChart: function(){
@@ -638,25 +695,33 @@ $(document).ready(function(){
     Budget.Display.removeChart();
     yearTracker = this.childNodes[0].textContent;
     Budget.Display.populateYearlySummary(yearTracker);
-    Budget.Display.updateTreemap();
+    if(Budget.State.atBudgetLevel()){
+      Budget.Display.updateTreemap();
+    } else {
+      var treemapName = Budget.State.lastItem;
+      Budget.Display.updateTreemap(treemapName, true);
+    }
   });
 
   $('.type_chooser ul li').on("click", function(){
     $(this).addClass('active').siblings().removeClass('active');
-
-    Budget.Display.removeChart();
-    typeTracker = this.textContent.toLowerCase();
+    Budget.State.typeTracker = this.textContent.toLowerCase();
     Budget.Display.updateTreemap();
   });
 
   $('.inflation_chooser li').on("click", function(){
     $(this).addClass('active').siblings().removeClass('active');
     if (this.textContent === "Inflation Adjusted") {
-      inflationTracker = true;
+      Budget.State.inflationTracker = true;
     } else {
-      inflationTracker = false;
+      Budget.State.inflationTracker = false;
     }
-    Budget.Display.updateTreemap();
+    if(Budget.State.atBudgetLevel()){
+      Budget.Display.updateTreemap();
+    } else {
+      var treemapName = Budget.State.lastItem;
+      Budget.Display.updateTreemap(treemapName, true);
+    }
   });
 
   var table_row_clicks = 0;
