@@ -577,6 +577,8 @@ $(document).ready(function(){
     },
 
     setupAreaChart: function(data){
+      this.loadAreaLightbox();
+
       var margin = {top: 20, right: 20, bottom: 30, left: 100},
           width = 960 - margin.left - margin.right,
           height = 500 - margin.top - margin.bottom;
@@ -604,7 +606,7 @@ $(document).ready(function(){
           .append("div")
           .attr("class", "tooltip")
           .style("position", "absolute")
-          .style("z-index", "10")
+          .style("z-index", "10000")
           .style("visibility", "hidden")
           .text("a simple tooltip");
 
@@ -643,7 +645,7 @@ $(document).ready(function(){
             tooltip.html(this.getAttribute("text"));
             return tooltip.style("visibility", "visible");
           })
-          .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+20)+"px");})
+          .on("mousemove", function(){return tooltip.style("top", (event.pageY-800)+"px").style("left",(event.pageX-200)+"px");})
           .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
       svg.append("g")
@@ -668,8 +670,12 @@ $(document).ready(function(){
       this.setupAreaChart(chartData);
     },
 
+    loadAreaLightbox: function(){
+      jQuery.facebox('<div id="area_graph" style="width: 970; height: 510;"></div>');
+    },
+
     removeAreaChart: function(){
-      $('#area_graph svg').remove();
+      $('#area_graph').remove();
     },
 
     removeChart: function(){
@@ -691,6 +697,11 @@ $(document).ready(function(){
 
   Budget.Init.setup();
 
+  // Set up facebox settings
+  $.facebox.settings.closeImage = '/closelabel.png';
+  $.facebox.settings.loadingImage = '/loading.gif';
+
+  // Attach event listeners to the years
   $('.year').on("click", function(){
     Budget.Display.removeChart();
     yearTracker = this.childNodes[0].textContent;
@@ -739,4 +750,5 @@ $(document).ready(function(){
       }, 300);
     }
   });
+
 });
