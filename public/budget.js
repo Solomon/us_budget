@@ -66,11 +66,24 @@ $(document).ready(function(){
     }
   };
 
+  /*
+  * The state object tracks the state of the view, and knows which
+  * information to pass along to get to different visualization levels
+  *
+  * There are a number of things we track:
+  * inflation / infaltion adjusted
+  * the year we are looking at
+  * the level of the visualization: at budget level, agency, or bureau
+  */
   Budget.State = {
     yearTracker: '2011',
     typeTracker: "expenses",
     inflationTracker: false,
 
+    /*
+    * Returns the name of either the agency or the bureau that is
+    * currently shown on the treemap
+    */
     treemapLevelName: function(){
       if(typeof this.bureauTracker !== "undefined"){
         return this.bureauTracker;
@@ -81,6 +94,9 @@ $(document).ready(function(){
       }
     },
 
+    /*
+    * Is the current visualization at the budget level?
+    */
     atBudgetLevel: function(){
       if(typeof this.levelTracker === "undefined" || this.levelTracker === "budget"){
         return true;
@@ -89,6 +105,9 @@ $(document).ready(function(){
       }
     },
 
+    /*
+    * Reset the state of the visualization to be at the budget level for the year
+    */
     resetState: function(){
       this.removeTrackers();
       if(this.typeTracker === 'expenses'){
@@ -100,6 +119,9 @@ $(document).ready(function(){
       }
     },
 
+    /*
+    * Remove all the variables that track the current state
+    */
     removeTrackers: function(){
       $('.agency').html('');
       $('.bureau').html('');
@@ -109,6 +131,14 @@ $(document).ready(function(){
       delete this.bureauTracker;
     },
 
+    /*
+    * Get the data that wee need to create the treemap, based on the
+    * current state of the treemap. Optional noAdvance param to not
+    * advance the state of the treemap when getting the information.
+    * aka: when switching years or to inflation adjusted, we want to
+    * stay at the same level of budget/bureau/agency but want new data
+    * based on the new state of the year / inlation trackers
+    */
     treemapDataFromState: function(name, noAdvance){
       this.lastItem = name;
 
@@ -125,6 +155,14 @@ $(document).ready(function(){
       }
     },
 
+    /*
+    * Advance the level of the visualization, from:
+    * Budget (shows the overall budget in its entirety) ->
+    * agency (shows a single agency) ->
+    * bureau (shows a single bureau within an agency and all its line item expenses)
+    *
+    * circle back to the budget level when advancing from bureau
+    */
     advanceLevel: function(name){
       if(this.levelTracker === "budget"){
         $('.agency').html(name);
@@ -139,6 +177,9 @@ $(document).ready(function(){
       }
     },
 
+    /*
+    * Get the data we need to create the treemap when looking for expenses
+    */
     treemapExpenseData: function(name){
       if(this.levelTracker === "agency"){
         return Budget.Expenses.getYearlyAgency(yearTracker, name);
@@ -149,6 +190,9 @@ $(document).ready(function(){
       }
     },
 
+    /*
+    * Get the data we need to create the treemap when looking for receipts
+    */
     treemapReceiptData: function(name){
       if(this.levelTracker === "agency"){
         return Budget.Receipts.agencyReceipts(yearTracker, name);
@@ -159,6 +203,9 @@ $(document).ready(function(){
       }
     },
 
+    /*
+    * Get the data we need to create the area graph
+    */
     areaGraphData: function(name){
       if(this.typeTracker === "receipts") {
         if(this.levelTracker === "budget") {
@@ -243,10 +290,10 @@ $(document).ready(function(){
     * line items in the provided year.
     */
     getYearlyExpenses: function(year){
-      var expenses = this;
+      var that = this;
       var expenseItems = Budget.State.inflationTracker ? inflationExpenseItems : expenseLineItems;
       var yearlyBudget = expenseItems.map(
-        function(x) { return expenses.getYearlyLineItem(x, year); }
+        function(x) { return that.getYearlyLineItem(x, year); }
       );
       return yearlyBudget;
     },
@@ -262,10 +309,10 @@ $(document).ready(function(){
     */
     getYearlyData: function(year){
       var d = this.getNestedData(year);
-      var expenses = this;
+      var that = this;
 
       var data = _.map(d, function(val , key){
-        var agencyChildren = expenses.getAgencyChildren(val);
+        var agencyChildren = that.getAgencyChildren(val);
         return {
           "name" : key,
           "children" : agencyChildren,
@@ -285,11 +332,11 @@ $(document).ready(function(){
     * name and size attributes.
     */
     getTopLevelAgencies: function(year){
-      var expenses = this;
+      var that = this;
       var d = this.getNestedData(year);
 
       var data = _.map(d, function(val , key){
-        var agencyChildren = expenses.getAgencyChildren(val);
+        var agencyChildren = that.getAgencyChildren(val);
         return {
           "name" : key,
           "size" : _.reduce(agencyChildren, function(sum, num){
@@ -382,19 +429,19 @@ $(document).ready(function(){
     },
 
     yearlyReceipts: function(year){
-      var receipts = this;
+      var that = this;
       var incomeItems = Budget.State.inflationTracker ? inflationIncomeItems : incomeLineItems;
       return incomeItems.map(
-        function(x) { return receipts.receiptForYear(x,year); }
+        function(x) { return that.receiptForYear(x,year); }
       );
     },
 
     receiptsData: function(year){
       var d = this.nestedReceipts(year);
-      var receipts = this;
+      var that = this;
 
       var data = _.map(d, function(val , key){
-        var agencyChildren = receipts.agencyChildren(val);
+        var agencyChildren = that.agencyChildren(val);
         return {
           "name" : key,
           "children" : agencyChildren,
@@ -417,11 +464,11 @@ $(document).ready(function(){
     },
 
     budgetReceipts: function(year){
-      var receipts = this;
+      var that = this;
       var d = this.nestedReceipts(year);
 
       var data = _.map(d, function(val , key){
-        var agencyChildren = receipts.agencyChildren(val);
+        var agencyChildren = that.agencyChildren(val);
         return {
           "name" : key,
           "size" : _.reduce(agencyChildren, function(sum, num){
@@ -477,7 +524,7 @@ $(document).ready(function(){
           root,
           chartData,
           node,
-          visual = this;
+          that = this;
 
       var tooltip = d3.select("#chart")
         .append("div")
@@ -511,7 +558,7 @@ $(document).ready(function(){
           .attr("class", "cell tooltip")
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
           .on("click", function(d) {
-            visual.updateTreemap(d.name);
+            that.updateTreemap(d.name);
           })
           .on("mouseover", function(){
             tooltip.html($(this).text().replace(":","<br/>"));
@@ -645,7 +692,8 @@ $(document).ready(function(){
             tooltip.html(this.getAttribute("text"));
             return tooltip.style("visibility", "visible");
           })
-          .on("mousemove", function(){return tooltip.style("top", (event.pageY-800)+"px").style("left",(event.pageX-200)+"px");})
+          .on("click", function(e){ console.log("x: " + event.pageX + " y: " + event.pageY);})
+          .on("mousemove", function(e){return tooltip.style("top", (event.pageY/2-20)+"px").style("left",(event.pageX-20)+"px");})
           .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
       svg.append("g")
