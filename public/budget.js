@@ -624,7 +624,6 @@ $(document).ready(function(){
     },
 
     setupAreaChart: function(data){
-      this.loadAreaLightbox();
 
       var margin = {top: 20, right: 20, bottom: 30, left: 100},
           width = 960 - margin.left - margin.right,
@@ -692,8 +691,12 @@ $(document).ready(function(){
             tooltip.html(this.getAttribute("text"));
             return tooltip.style("visibility", "visible");
           })
-          .on("click", function(e){ console.log("x: " + event.pageX + " y: " + event.pageY);})
-          .on("mousemove", function(e){return tooltip.style("top", (event.pageY/2-20)+"px").style("left",(event.pageX-20)+"px");})
+          .on("click", function(){ console.log("x: " + event.pageX + " y: " + event.pageY);})
+          .on("mousemove", function(){
+            var top = event.pageY - parseInt($('#facebox').css('top'), 10);
+            var left = event.pageX - parseInt($('#facebox').css('left'), 10);
+            return tooltip.style("top", (top -20)+"px").style("left",(left + 30)+"px");
+          })
           .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
       svg.append("g")
@@ -714,12 +717,17 @@ $(document).ready(function(){
 
     updateAreaChart: function(name){
       this.removeAreaChart();
+      this.loadAreaLightbox(name);
       var chartData = Budget.State.areaGraphData(name);
       this.setupAreaChart(chartData);
     },
 
-    loadAreaLightbox: function(){
-      jQuery.facebox('<div id="area_graph" style="width: 970; height: 510;"></div>');
+    loadAreaLightbox: function(name){
+      jQuery.facebox(
+        '<div id="area_graph" style="width: 970; height: 550;">' +
+          '<h2 class="chart_title">' + name + '</h2>' +
+        '</div>'
+      );
     },
 
     removeAreaChart: function(){
