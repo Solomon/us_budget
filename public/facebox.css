@@ -68,6 +68,7 @@
   left: 0px;
   height:100%;
   width:100%;
+  opacity: .4 !important;
 }
 
 .facebox_hide {

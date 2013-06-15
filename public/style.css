@@ -1,67 +1,35 @@
-.year {
-  float: left;
-  margin: 8px 8px 8px 0;
-}
-
 .container {
   width: 940px;
+  overflow: hidden;
   margin-left: auto;
   margin-right: auto;
-}
-
-.year_picker {
-  margin: 15px 0 15px 0;
-  height: 50px;
-}
-
-.type_chooser, .inflation_chooser{
-  /*margin: 15px 0 15px 0;*/
-  float: left;
-}
-
-
-.breadcrumb {
-  padding: 0;
-}
-
-.breadcrumb li{
-  display: inline;
-  text-decoration: none;
-  text-align: left;
 }
 
 .span12 {
   width: 940px;
 }
 
-.yearly_summary {
-  margin: 10px 0;
-  float: left;
-  padding: 15px 0;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
+.span6 {
+  width: 460px;
 }
 
-.yearly_summary p{
-  display: inline;
-  margin: 20px 80px 20px 0;
-  font-size: 24px;
+.span3 {
+  width: 230px;
 }
 
-.expenses {
-  display: none;
+.year_picker {
+  margin-left: -5px;
+}
+
+.year {
+  padding: 5px;
+  line-height: 24px;
 }
 
 #chart {
-  margin: 40px 0 15px 0;
+  margin: 10px 0 15px 0;
   padding: 10px 0;
   clear: both;
-}
-
-.top_nav {
-  margin: 20px 0 20px 0;
-  width: 100%;
-  height: 50px;
 }
 
 .area {
@@ -77,34 +45,58 @@
   border-radius: 5px;
 }
 
-.type_and_inflation_chooser {
- /*margin: 10px 0;*/
- float: left;
- position: relative;
+.active {
+  background: #4E9CB5;
+  color: white;
+  padding: 5px;
+  border-radius: 2px;
 }
 
-
-.inflation_chooser {
-  width: 50%;
-  float: right;
-  text-align: right;
+.hidden {
+  display: none;
 }
 
-.inflation_chooser li {
-  margin-left: 10px;
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
-.type_chooser li {
-  margin-right: 10px;
+.chart_control {
+  margin: 10px 0;
 }
 
 .type_chooser {
-  width: 50%;
   float: left;
 }
 
-.active {
-  background: blue;
-  color: white;
-  padding: 5px;
+.inflation_chooser {
+  float: right;
+}
+
+li {
+  display: inline;
+}
+
+.clear {
+  clear: both;
+}
+
+.summary_year {
+  font-weight: bold;
+}
+
+.yearly_summary li {
+  margin-right: 10px;
+}
+
+.footer {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid black;
+}
+
+.big {
+  font-size: 24px;
+  font-weight: bold;
 }

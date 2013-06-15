@@ -1,43 +1,54 @@
 %link{:rel => "stylesheet", :type => "text/css", :href => "style.css"}
 %link{:rel => "stylesheet", :type => "text/css", :href => "facebox.css"}
 
-%div.container
-  %div.top_nav
-    %div
-      %h2 US Budget
+.container
+  .top_nav.span12
+    %p
+      %span.big US Budget
+      %span - Click once for a chart, twice for more details
 
-    %ul.breadcrumb
+  .year_picker.span12
+    %p
+      - (1980..2013).each do |y|
+        %span.year= y.to_s
+
+  .clear
+  .span12.summary.hidden
+    %ul.yearly_summary
+      %li.summary_year
+      %li.summary_receipts
+      %li.summary_expenses
+      %li.summary_net
+
+  .backtrace.span12
+    %ul
       %li.agency
       %li.bureau
 
-  %div.year_picker
-    - (1980..2013).each do |y|
-      %p.year= y.to_s
+  .chart_control.span12.hidden
+    %ul.type_chooser
+      %li.chooser.expense_chooser.active Expenses
+      %li.chooser.receipts_chooser Receipts
 
-  .toggle_list Toggle List
+    %ul.inflation_chooser
+      %li.normal_currency.active Normal
+      %li.inflation_adjusted Inflation Adjusted
+    %br
 
-  %div.yearly_summary.span12
-    %p.summary_receipts
-    %p.summary_expenses
-    %p.summary_net
+  .clear
+  #chart.span12
 
-  .type_and_inflation_chooser.span12
-    .type_chooser
-      %ul.breadcrumb
-        %li.chooser.expense_chooser.active Expenses
-        %li.chooser.receipts_chooser Receipts
+  %p.toggle_list.hidden Toggle List
 
-    .inflation_chooser
-      %ul.breadcrumb
-        %li.normal_currency.active Normal
-        %li.inflation_adjusted Inflation Adjusted
+  %table.expenses.expense_table.hidden
 
-  %div#chart.span12
+  .footer.span12
+    Copyright 2013 by
+    %a{:href => 'http://www.solomonkahn.com'} Solomon Kahn
+    %a{:href => 'http://www.twitter.com/solomonkahn'} @solomonkahn
 
 
-  %table.expenses.expense_table
 
-    -#%ul.expense_list
 
 %script{:type => "text/javascript", :src => "jquery-1.9.1.min.js"}
 %script{:type => "text/javascript", :src => "d3.v3.min.js"}

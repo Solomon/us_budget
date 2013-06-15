@@ -113,10 +113,10 @@ $(document).ready(function(){
       this.removeTrackers();
       if(this.typeTracker === 'expenses'){
         this.levelTracker = "budget";
-        return Budget.Expenses.getTopLevelAgencies(yearTracker);
+        return Budget.Expenses.getTopLevelAgencies(this.yearTracker);
       } else {
         this.levelTracker = "budget";
-        return Budget.Receipts.budgetReceipts(yearTracker);
+        return Budget.Receipts.budgetReceipts(this.yearTracker);
       }
     },
 
@@ -183,9 +183,9 @@ $(document).ready(function(){
     */
     treemapExpenseData: function(name){
       if(this.levelTracker === "agency"){
-        return Budget.Expenses.getYearlyAgency(yearTracker, name);
+        return Budget.Expenses.getYearlyAgency(this.yearTracker, name);
       } else if(this.levelTracker === "bureau"){
-        return Budget.Expenses.getYearlyBureau(yearTracker, this.agencyTracker, name);
+        return Budget.Expenses.getYearlyBureau(this.yearTracker, this.agencyTracker, name);
       } else {
         return this.resetState();
       }
@@ -196,9 +196,9 @@ $(document).ready(function(){
     */
     treemapReceiptData: function(name){
       if(this.levelTracker === "agency"){
-        return Budget.Receipts.agencyReceipts(yearTracker, name);
+        return Budget.Receipts.agencyReceipts(this.yearTracker, name);
       } else if(this.levelTracker === "bureau"){
-        return Budget.Receipts.bureauReceipts(yearTracker, this.agencyTracker, name);
+        return Budget.Receipts.bureauReceipts(this.yearTracker, this.agencyTracker, name);
       } else {
         return this.resetState();
       }
@@ -518,7 +518,7 @@ $(document).ready(function(){
   Budget.Display = {
     setupTreemap: function(visualData){
       var w = 940,
-          h = 600,
+          h = 500,
           x = d3.scale.linear().range([0, w]),
           y = d3.scale.linear().range([0, h]),
           color = d3.scale.category20c(),
@@ -626,7 +626,7 @@ $(document).ready(function(){
     },
 
     setTreemapBackgroundToWhite: function(){
-      $('.cell').first().children().first().css("fill", "white");
+      $('.cell').first().remove();
     },
 
     setupTreemapAndList: function(d){
@@ -639,6 +639,7 @@ $(document).ready(function(){
       var expenses = totalAmount(Budget.Expenses.getYearlyExpenses(year));
       var receipts = totalAmount(Budget.Receipts.yearlyReceipts(year));
       var net = receipts - expenses;
+      $('.summary_year').html(Budget.State.yearTracker + " Summary:");
       $('.summary_expenses').html("Expenses " + toDollar(expenses));
       $('.summary_receipts').html("Receipts " + toDollar(receipts));
       $('.summary_net').html("Net " + toDollar(net));
@@ -755,6 +756,12 @@ $(document).ready(function(){
       $('#area_graph').remove();
     },
 
+    showChartControl: function(){
+      $('.summary').show();
+      $('.chart_control').show();
+      $('.toggle_list').show();
+    },
+
     removeChart: function(){
       $('.chart').remove();
       $('.treemapTooltip').remove();
@@ -780,9 +787,11 @@ $(document).ready(function(){
 
   // Attach event listeners to the years
   $('.year').on("click", function(){
+    $(this).addClass('active').siblings().removeClass('active');
     Budget.Display.removeChart();
-    yearTracker = this.childNodes[0].textContent;
-    Budget.Display.populateYearlySummary(yearTracker);
+    Budget.Display.showChartControl();
+    Budget.State.yearTracker = $(this).text();
+    Budget.Display.populateYearlySummary(Budget.State.yearTracker);
     if(Budget.State.atBudgetLevel()){
       Budget.Display.updateTreemap();
     } else {
@@ -791,7 +800,7 @@ $(document).ready(function(){
     }
   });
 
-  $('.type_chooser ul li').on("click", function(){
+  $('.type_chooser li').on("click", function(){
     $(this).addClass('active').siblings().removeClass('active');
     Budget.State.typeTracker = this.textContent.toLowerCase();
     Budget.Display.updateTreemap();
@@ -819,5 +828,6 @@ $(document).ready(function(){
   $(document).on("click", ".toggle_list", function(){
     $('.expense_table').toggle();
   });
+
 
 });
