@@ -79,6 +79,7 @@ $(document).ready(function(){
     yearTracker: '2011',
     typeTracker: "expenses",
     inflationTracker: false,
+    treemapClicks: 0,
 
     /*
     * Returns the name of either the agency or the bureau that is
@@ -558,7 +559,7 @@ $(document).ready(function(){
           .attr("class", "cell tooltip")
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
           .on("click", function(d) {
-            that.updateTreemap(d.name);
+            that.graphOrUpdate(d.name);
           })
           .on("mouseover", function(){
             tooltip.html($(this).text().replace(":","<br/>"));
@@ -568,8 +569,8 @@ $(document).ready(function(){
           .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
       cell.append("svg:rect")
-          .attr("width", function(d) { return d.dx ; })
-          .attr("height", function(d) { return d.dy ; })
+          .attr("width", function(d) { return d.dx > 2 ? d.dx - 2 : d.dx; })
+          .attr("height", function(d) { return d.dy > 2 ? d.dy - 2 : d.dy; })
           .style("fill", function(d) { return color(d.size * Math.random()); });
 
       cell.append("svg:text")
@@ -597,6 +598,21 @@ $(document).ready(function(){
       this.setupTreemapAndList(chartData);
     },
 
+    graphOrUpdate: function(name){
+      var that = this;
+      Budget.State.treemapClicks++;
+      if(Budget.State.treemapClicks === 1){
+        setTimeout(function(){
+          if(Budget.State.treemapClicks === 1){
+            that.updateAreaChart(name);
+          } else {
+            that.updateTreemap(name);
+          }
+          Budget.State.treemapClicks = 0;
+        }, 300);
+      }
+    },
+
     populateList: function(f){
       var expenseList = $('.expenses');
       expenseList.children().remove();
@@ -609,8 +625,13 @@ $(document).ready(function(){
       expenseList.append("<tr><td>Total</td><td>" + toDollar(total) + "</td></tr>");
     },
 
+    setTreemapBackgroundToWhite: function(){
+      $('.cell').first().children().first().css("fill", "white");
+    },
+
     setupTreemapAndList: function(d){
       this.setupTreemap(d);
+      this.setTreemapBackgroundToWhite();
       this.populateList(d.children);
     },
 
@@ -695,7 +716,7 @@ $(document).ready(function(){
           .on("mousemove", function(){
             var top = event.pageY - parseInt($('#facebox').css('top'), 10);
             var left = event.pageX - parseInt($('#facebox').css('left'), 10);
-            return tooltip.style("top", (top -20)+"px").style("left",(left + 30)+"px");
+            return tooltip.style("top", (top -20)+"px").style("left",(left + 20)+"px");
           })
           .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
@@ -791,20 +812,12 @@ $(document).ready(function(){
     }
   });
 
-  var table_row_clicks = 0;
   $(document).on("click", ".expense_table tr", function(e) {
-    var that = this;
-    table_row_clicks++;
-    if(table_row_clicks === 1){
-      setTimeout(function(){
-        if(table_row_clicks === 1){
-          Budget.Display.updateAreaChart(that.firstChild.textContent);
-        } else {
-          Budget.Display.updateTreemap(that.firstChild.textContent);
-        }
-        table_row_clicks = 0;
-      }, 300);
-    }
+    Budget.Display.graphOrUpdate(this.firstChild.textContent);
+  });
+
+  $(document).on("click", ".toggle_list", function(){
+    $('.expense_table').toggle();
   });
 
 });

@@ -49,7 +49,7 @@
 }
 
 .expenses {
-
+  display: none;
 }
 
 #chart {
