@@ -2,10 +2,32 @@
 %link{:rel => "stylesheet", :type => "text/css", :href => "facebox.css"}
 
 .container
-  .top_nav.span12
+  .top_nav.span12.hidden
     %p
       %span.big US Budget
       %span - Click once for a chart, twice for more details
+      .summary.hidden
+        %ul.yearly_summary
+          %li.summary_year
+          %li.summary_receipts
+          %li.summary_expenses
+          %li.summary_net
+
+  .instructions.span12
+    %h1 US Budget
+
+    %p.big Instructions
+    / &#x25BC
+
+    %ul
+      %li
+        Click on any year to see the budget for that year.
+      %li
+        When the treemap pops up, click on a budget item to see a graph over time.
+      %li
+        Double click to see details about that department.
+      %li
+        Click toggle list to see a list of all the line items.
 
   .year_picker.span12
     %p
@@ -13,12 +35,6 @@
         %span.year= y.to_s
 
   .clear
-  .span12.summary.hidden
-    %ul.yearly_summary
-      %li.summary_year
-      %li.summary_receipts
-      %li.summary_expenses
-      %li.summary_net
 
   .backtrace.span12
     %ul

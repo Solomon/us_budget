@@ -757,6 +757,8 @@ $(document).ready(function(){
     },
 
     showChartControl: function(){
+      $('.top_nav').show();
+      $('.instructions').hide();
       $('.summary').show();
       $('.chart_control').show();
       $('.toggle_list').show();

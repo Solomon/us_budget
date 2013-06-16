@@ -3,18 +3,11 @@
   overflow: hidden;
   margin-left: auto;
   margin-right: auto;
+  color: #463E3F;
 }
 
 .span12 {
   width: 940px;
-}
-
-.span6 {
-  width: 460px;
-}
-
-.span3 {
-  width: 230px;
 }
 
 .year_picker {
@@ -24,6 +17,7 @@
 .year {
   padding: 5px;
   line-height: 24px;
+  cursor: pointer;
 }
 
 #chart {
@@ -68,10 +62,12 @@ ul {
 
 .type_chooser {
   float: left;
+  cursor: pointer;
 }
 
 .inflation_chooser {
   float: right;
+  cursor: pointer;
 }
 
 li {
@@ -99,4 +95,17 @@ li {
 .big {
   font-size: 24px;
   font-weight: bold;
+}
+
+.instructions {
+  height: 250px;
+}
+
+.instructions li {
+  display: block;
+  margin: 5px 0;
+}
+
+.toggle_list {
+  cursor: pointer;
 }
