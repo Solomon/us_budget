@@ -350,6 +350,10 @@ $(document).ready(function(){
       return {"name" : "us_budget", "children" : sortedData};
     },
 
+    /*
+    * Use the d3 next function to change the data into a nested js object by
+    * agencies and then by bureau
+    */
     getNestedData: function(year){
       var data2 = d3.nest()
         .key(function(d) {return d['agencyName'];})
@@ -358,6 +362,11 @@ $(document).ready(function(){
       return data2;
     },
 
+    /*
+    * For an agency or bureau, gets the children, aka the line items for each.
+    *
+    * This returns a js object
+    */
     getAgencyChildren: function(r){
      var agency_children = _.map(r, function(val, key){
        return {
@@ -659,11 +668,13 @@ $(document).ready(function(){
 
       var xAxis = d3.svg.axis()
           .scale(x)
-          .orient("bottom");
+          .orient(y(0));
 
       var yAxis = d3.svg.axis()
           .scale(y)
           .orient("left");
+
+      var minAmount = d3.min(data, function(d) { return d.amount; });
 
       var area = d3.svg.area()
           .x(function(d) { return x(d.date); })
@@ -685,7 +696,12 @@ $(document).ready(function(){
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       x.domain(d3.extent(data, function(d) { return d.date; }));
-      y.domain([0, d3.max(data, function(d) { return d.amount; })]);
+      y.domain(
+        [
+          _.min([ minAmount ,0 ]),
+          d3.max(data, function(d) { return d.amount; })
+        ]
+      );
 
       svg.append("path")
           .datum(data)
@@ -713,7 +729,6 @@ $(document).ready(function(){
             tooltip.html(this.getAttribute("text"));
             return tooltip.style("visibility", "visible");
           })
-          .on("click", function(){ console.log("x: " + event.pageX + " y: " + event.pageY);})
           .on("mousemove", function(){
             var top = event.pageY - parseInt($('#facebox').css('top'), 10);
             var left = event.pageX - parseInt($('#facebox').css('left'), 10);
