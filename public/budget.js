@@ -757,11 +757,21 @@ $(document).ready(function(){
     },
 
     showChartControl: function(){
-      $('.top_nav').show();
       $('.instructions').hide();
+      $('.show_instructions').show();
       $('.summary').show();
       $('.chart_control').show();
+      $('#chart').show();
       $('.toggle_list').show();
+    },
+
+    showInstructions: function(){
+      $('.summary').hide();
+      $('.show_instructions').hide();
+      $('.chart_control').hide();
+      $('#chart').hide();
+      $('.toggle_list').hide();
+      $('.instructions').show();
     },
 
     removeChart: function(){
@@ -829,6 +839,10 @@ $(document).ready(function(){
 
   $(document).on("click", ".toggle_list", function(){
     $('.expense_table').toggle();
+  });
+
+  $(document).on("click", ".show_instructions", function(){
+    Budget.Display.showInstructions();
   });
 
 

@@ -98,7 +98,12 @@ li {
 }
 
 .instructions {
-  height: 250px;
+  height: 750px;
+}
+
+.show_instructions {
+  margin-left: 20px;
+  cursor: pointer;
 }
 
 .instructions li {
