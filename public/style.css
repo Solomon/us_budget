@@ -1,9 +1,26 @@
+body {
+  background-color: rgb(170, 239, 241);
+  margin: 0;
+}
+
 .container {
   width: 940px;
+  background-color: white;
   overflow: hidden;
   margin-left: auto;
   margin-right: auto;
   color: #463E3F;
+  padding: 15px;
+  border-left: 1px solid gray;
+  border-right: 1px solid gray;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.instructions {
+  font-size: 16px;
+  line-height: 24px;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  height: 600px;
 }
 
 .span12 {
@@ -16,8 +33,10 @@
 
 .year {
   padding: 5px;
+  margin: 4px;
   line-height: 24px;
   cursor: pointer;
+  font-family: "Times New Roman", Times, serif;
 }
 
 #chart {
@@ -56,8 +75,20 @@ ul {
   margin: 0;
 }
 
+.backtrace {
+  margin: 15px 0;
+}
+
+.bureau {
+  margin-left: 25px;
+}
+
 .chart_control {
-  margin: 10px 0;
+  margin: 20px 0 10px 0;
+}
+
+.chart_title {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
 .type_chooser {
@@ -79,7 +110,7 @@ li {
 }
 
 .summary_year {
-  font-weight: bold;
+  /*font-weight: bold;*/
 }
 
 .yearly_summary li {
@@ -94,12 +125,15 @@ li {
 
 .big {
   font-size: 24px;
-  font-weight: bold;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
-.instructions {
-  height: 750px;
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
+
 
 .show_instructions {
   margin-left: 20px;
@@ -113,4 +147,11 @@ li {
 
 .toggle_list {
   cursor: pointer;
+}
+
+.year:hover, .type_chooser li:hover, .inflation_chooser li:hover {
+  background: #4E9CB5;
+  color: white;
+  padding: 5px;
+  border-radius: 2px;
 }

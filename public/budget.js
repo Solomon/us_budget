@@ -166,11 +166,11 @@ $(document).ready(function(){
     */
     advanceLevel: function(name){
       if(this.levelTracker === "budget"){
-        $('.agency').html(name);
+        $('.agency').html("<strong>Agency:</strong> " + name);
         this.levelTracker = "agency";
         this.agencyTracker = name;
       } else if(this.levelTracker === "agency"){
-        $('.bureau').html(name);
+        $('.bureau').html("<strong>Bureau:</strong> " + name);
         this.levelTracker = "bureau";
         this.bureauTracker = name;
       } else {
@@ -649,9 +649,9 @@ $(document).ready(function(){
       var receipts = totalAmount(Budget.Receipts.yearlyReceipts(year));
       var net = receipts - expenses;
       $('.summary_year').html(Budget.State.yearTracker + " Summary:");
-      $('.summary_expenses').html("Expenses " + toDollar(expenses));
-      $('.summary_receipts').html("Receipts " + toDollar(receipts));
-      $('.summary_net').html("Net " + toDollar(net));
+      $('.summary_expenses').html("Expenses - " + toDollar(expenses));
+      $('.summary_receipts').html("Receipts - " + toDollar(receipts));
+      $('.summary_net').html("Net - " + toDollar(net));
     },
 
     setupAreaChart: function(data){
@@ -777,7 +777,8 @@ $(document).ready(function(){
       $('.summary').show();
       $('.chart_control').show();
       $('#chart').show();
-      $('.toggle_list').show();
+      $('.toggle_section').show();
+      $('.backtrace').show();
     },
 
     showInstructions: function(){
@@ -785,7 +786,9 @@ $(document).ready(function(){
       $('.show_instructions').hide();
       $('.chart_control').hide();
       $('#chart').hide();
-      $('.toggle_list').hide();
+      $('.toggle_section').hide();
+      $('.expense_table').hide();
+      $('.backtrace').hide();
       $('.instructions').show();
     },
 

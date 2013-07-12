@@ -4,7 +4,7 @@
 .container
   .top_nav.span12
     %p
-      %span.big US Budget
+      %span.title US Budget
       %span.show_instructions.hidden Show Instructions
       .summary.hidden
         %ul.yearly_summary
@@ -14,9 +14,9 @@
           %li.summary_net
 
   .year_picker.span12
-    %p
+    %ul
       - (1980..2013).each do |y|
-        %span.year= y.to_s
+        %li.year= y.to_s
 
   .clear
 
@@ -28,10 +28,7 @@
       The US Budget, arguably the most important document for understanding how our government functions, is completely innaccesible.
 
     %p
-      Most people have never seen the US Budget, and don't know to look for it. How can a democratic society function if the voters, who are ultimately responsible for how much money is spent and collected, don't have even the most basic facts about how much we spend and what it is spent on?
-
-    %p
-      For the small percentage of people who search and find the budget, they will either find a pdf or csv file that offers no way to analyze the raw data in a summarized and intuitive form.
+      Most people have never seen the US Budget, and don't know to look for it. For the small percentage of people who search and find the budget, they will either find a pdf or csv file that offers no way to analyze the raw data in a summarized and intuitive form.
 
     %p
       The goal of this project is to fix that, and educate people about how the US collects and spends money.
@@ -39,23 +36,16 @@
     %p.big What Can You Do With This?
 
     %p
-      You can use this visualization to simply explore, or to find answers to questions you have about the budget. For example, if you were wondering whether the US spend more on defense now or at the height of the cold war, you could use this to answer the question. Perhaps you have heard many people saying that the country is in a too much debt. If you want to know how much that debt costs each year, you can find that information.
+      You can use this visualization to simply explore, or to find answers to questions you have about the budget. For example, check out how much the US spends on defense compared to at the height of the cold war. Also, see how much money we pay each year on government debt. Also, see how much money individuals contribute in taxes compared to corporations.
 
-    %p
-      The answers to these questions are actually not intuitive! On an inflation adjusted basis, we spend more money right now on defense than we did at the height of the cold war. Also, we spend less money on debt payments now than we did in the mid 1990's.
-
-    %p.big How To Use This
+    %p.big Instructions
 
     %p
       Click on any year to see the budget for that year. You will see what is called at "Treemap Visualization." This visualization has lots of boxes, and the size of each box corresponds to the dollar amount spent on that budget item.
     %p
-      This visualization has 3 different levels of detail. At the top-most level, you will see the entire US Budget, made up of 214 different agencies. For example, one agency would be the department of justice. Within the department of Justice There are many bureaus, such as the FBI and the Federal Prison System. Then, within each bureau you can see information about that specific bureau.
+      For any item in the visualization, click once to see a graph of how that item has changed over time. Click twice to go to the next level. For example, double click the department of justice to see a new treemap of the bureaus that make up the department of justice. Then, double click again to see the line items that make up a bureau.
     %p
-      For any item in the visualization, click once to see a graph of how that item has changed over time. Click twice to go to the next level, for example, double click the department of justice to see a new treemap of the bureaus that make up the department of justice. Then, double click again to see the line items that make up a bureau.
-    %p
-      You can toggle either expenses, the money being spent, or receipts, the money that comes in. You can also see these numbers on either a regular or inflation adjusted basis.
-    %p
-      If you want to see a list instead of the treemap, just click toggle list right below the treemap to see a list of everything in the treemap.
+      If you want to see a list instead of the treemap, click toggle list right below the treemap to see a list of everything in the treemap.
 
 
   .backtrace.span12
@@ -76,7 +66,9 @@
   .clear
   #chart.span12
 
-  %p.toggle_list.hidden Toggle List
+  .toggle_section.hidden
+    %p Single click for a chart, double click for more details.
+    %p.toggle_list Toggle List
 
   %table.expenses.expense_table.hidden
 
