@@ -855,13 +855,29 @@ $(document).ready(function(){
     Budget.Display.graphOrUpdate(this.firstChild.textContent);
   });
 
-  $(document).on("click", ".toggle_list", function(){
-    $('.expense_table').toggle();
-  });
+  // $(document).on("click", ".toggle_list", function(){
+  //   $('.expense_table').toggle();
+  // });
 
   $(document).on("click", ".show_instructions", function(){
     Budget.Display.showInstructions();
   });
 
+
+  $('.toggle_list').on("click", function(){
+    $('.expense_table').toggle();
+  });
+
+  $('.show_list').on("click", function(){
+    $('.show_list').hide();
+    $('.hide_list').show();
+    $('.expense_table').show();
+  });
+
+  $('.hide_list').on("click", function(){
+    $('.hide_list').hide();
+    $('.expense_table').hide();
+    $('.show_list').show();
+  });
 
 });
