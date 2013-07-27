@@ -322,7 +322,7 @@ $(document).ready(function(){
         };
       });
 
-      var sortedData = _.sortBy(data, function(d){return -1 * d.size; });
+      var sortedData = _.sortBy(data, function(d){return 1 * d.size; });
 
       return {"name" : "us_budget", "children" : sortedData};
     },
@@ -345,7 +345,7 @@ $(document).ready(function(){
         };
       });
 
-      var sortedData = _.sortBy(data, function(d){return -1 * d.size; });
+      var sortedData = _.sortBy(data, function(d){return 1 * d.size; });
 
       return {"name" : "us_budget", "children" : sortedData};
     },
@@ -460,7 +460,7 @@ $(document).ready(function(){
         };
       });
 
-      var sortedData = _.sortBy(data, function(d){return -1 * d.size; });
+      var sortedData = _.sortBy(data, function(d){return 1 * d.size; });
 
       return {"name" : "us_budget", "children" : sortedData};
     },
@@ -486,7 +486,7 @@ $(document).ready(function(){
         };
       });
 
-      var sortedData = _.sortBy(data, function(d){return -1 * d.size; });
+      var sortedData = _.sortBy(data, function(d){return 1 * d.size; });
 
       return {"name" : "us_budget", "children" : sortedData};
     },
@@ -525,18 +525,19 @@ $(document).ready(function(){
 
   // http://bost.ocks.org/mike/treemap/
   Budget.Display = {
-    setupTreemap: function(visualData){
+    setupTreemap: function(data){
       var w = 940,
           h = 500,
           x = d3.scale.linear().range([0, w]),
           y = d3.scale.linear().range([0, h]),
-          color = d3.scale.category20c(),
           root,
           chartData,
           node,
           that = this;
 
-      var tooltip = d3.select("#chart")
+      color = d3.scale.category20c();
+
+      tooltip = d3.select("#chart")
         .append("div")
         .attr("class", "tooltip treemapTooltip")
         .style("position", "absolute")
@@ -544,13 +545,16 @@ $(document).ready(function(){
         .style("visibility", "hidden")
         .text("a simple tooltip");
 
-      var treemap = d3.layout.treemap()
-          .round(false)
+      treemap = d3.layout.treemap()
           .size([w, h])
-          .sticky(true)
+          .sticky(false)
+          .sort(function(a,b) { return a.size - b.size; })
+          .round(false)
           .value(function(d) { return d.size; });
+          // .sort(function(a, b){ return b.size < a.size ? 1 : b.size > a.size ? -1 : 0; });
 
-      var svg = d3.select("#chart").append("div")
+
+      svg = d3.select("#chart").append("div")
           .attr("class", "chart")
           .style("width", w + "px")
           .style("height", h + "px")
@@ -558,54 +562,87 @@ $(document).ready(function(){
           .attr("width", w)
           .attr("height", h)
         .append("svg:g")
-          .attr("transform", "translate(.5,.5)");
+          .attr("class", "chartSvgSelect");
+    },
 
-      var nodes = treemap.nodes(visualData);
+    updateTreemapData: function(data){
+      var that = this;
+      var filteredData = {
+        name: data.name,
+        children: _.filter(data.children, function(d){ return d.size > 0; })
+      };
+      var nodes = treemap.nodes(filteredData);
 
-      var cell = svg.selectAll("g")
-          .data(nodes)
-        .enter().append("svg:g")
-          .attr("class", "cell tooltip")
-          .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-          .on("click", function(d) {
-            that.graphOrUpdate(d.name);
-          })
-          .on("mouseover", function(){
-            tooltip.html($(this).text().replace(":","<br/>"));
-            return tooltip.style("visibility", "visible");
-          })
-          .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+20)+"px");})
-          .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+      // Data Join
+      cell = svg.selectAll("rect")
+          .data(nodes);
 
-      cell.append("svg:rect")
-          .attr("width", function(d) { return d.dx > 2 ? d.dx - 2 : d.dx; })
-          .attr("height", function(d) { return d.dy > 2 ? d.dy - 2 : d.dy; })
-          .style("fill", function(d) { return color(d.size * Math.random()); });
+      // Update
+      cell.transition().duration(2000)
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+        .attr("width", function(d) { return d.dx > 2 ? d.dx - 2 : d.dx; })
+        .attr("height", function(d) { return d.dy > 2 ? d.dy - 2 : d.dy; })
+        .style("fill", function(d) { return color(d.size * Math.random()); });
 
-      cell.append("svg:text")
-          .attr("x", function(d) { return d.dx / 2; })
-          .attr("y", function(d) { return d.dy / 2; })
-          .attr("dy", ".35em")
-          .attr("text-anchor", "middle")
-          .text(function(d) {
-            var msg = d.name;
-            if(d.size){
-              msg += " : $";
-              msg += d.size.toFixed(0).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
-            }
-            return msg;
-          })
-          .style("visibility", "hidden");
+      cell.select("text")
+        .text(function(d) {
+          var msg = d.name;
+          if(d.size){
+            msg += " : $";
+            msg += d.size.toFixed(0).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
+          }
+          return msg;
+        })
+        .style("fill", "white");
 
-      var size = function(d){return d.size;};
+      // Enter
+      var cellEnter = cell.enter()
+        .append("svg:rect")
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+        .on("click", function(d) {
+          that.graphOrUpdate(d.name);
+        })
+        .on("mouseover", function(){
+          tooltip.html($(this).text().replace(":","<br/>"));
+          return tooltip.style("visibility", "visible");
+        })
+        .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+20)+"px");})
+        .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+
+      cellEnter.transition().duration(2000)
+        .attr("class", "cell tooltip")
+        .attr("width", function(d) { return d.dx > 2 ? d.dx - 2 : d.dx; })
+        .attr("height", function(d) { return d.dy > 2 ? d.dy - 2 : d.dy; })
+        .style("fill", function(d) { return color(d.size * Math.random()); })
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+      cellEnter.append("svg:text")
+        .text(function(d) {
+          var msg = d.name;
+          if(d.size){
+            msg += " : $";
+            msg += d.size.toFixed(0).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
+          }
+          return msg;
+        })
+        .style("fill", "white");
+
+      // Exit
+      cell.exit()
+        .transition()
+        .duration(2000)
+        .attr("width", 0)
+        .attr("height", 0)
+        .attr('x', 0).remove();
+
     },
 
     updateTreemap: function(name, noAdvance){
-      this.removeChart();
       this.removeAreaChart();
       var chartData = Budget.State.treemapDataFromState(name, noAdvance);
       this.setupTreemapAndList(chartData);
     },
+
 
     graphOrUpdate: function(name){
       var that = this;
@@ -639,7 +676,11 @@ $(document).ready(function(){
     },
 
     setupTreemapAndList: function(d){
-      this.setupTreemap(d);
+      var oldChart = $(".chartSvgSelect").length ? true : false;
+      if(!oldChart){
+        this.setupTreemap(d);
+      }
+      this.updateTreemapData(d);
       this.setTreemapBackgroundToWhite();
       this.populateList(d.children);
     },
@@ -818,7 +859,7 @@ $(document).ready(function(){
   // Attach event listeners to the years
   $('.year').on("click", function(){
     $(this).addClass('active').siblings().removeClass('active');
-    Budget.Display.removeChart();
+    // Budget.Display.removeChart();
     Budget.Display.showChartControl();
     Budget.State.yearTracker = $(this).text();
     Budget.Display.populateYearlySummary(Budget.State.yearTracker);
