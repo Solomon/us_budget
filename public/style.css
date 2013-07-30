@@ -163,3 +163,11 @@ g {
   font-size: 12px;
 }
 
+
+.label, .treemap_text {
+  cursor: default;
+}
+
+.show_list, .hide_lise {
+  cursor: pointer;
+}
