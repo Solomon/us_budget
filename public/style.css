@@ -171,3 +171,10 @@ g {
 .show_list, .hide_lise {
   cursor: pointer;
 }
+
+.treemap_text_details {
+  text-align: left;
+  font-size: 14px;
+  line-height: 22px;
+  margin-top: 15px;
+}

@@ -589,9 +589,10 @@ $(document).ready(function(){
         .text(function(d) {
           var msg = d.name;
           if(d.size){
-            msg += " : $";
+            msg += " : <div class='treemap_text_details'>$";
             msg += (d.size / 1000000).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
-            msg += " Billion";
+            msg += " Billion : ";
+            msg += ((d.size/d.parent.value) * 100).toFixed(2) + "% of total</div>";
           }
           return msg;
         })
@@ -602,7 +603,16 @@ $(document).ready(function(){
         .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
         .text(function(d) {return d.name;})
         .style("opacity", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; })
-        .attr("textLength", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? d.w : d.dx - 6;});
+        .attr("textLength", function(d){
+          d.w = this.getComputedTextLength();
+          if(d.dx > d.w){
+            return d.w;
+          } else if(d.dx < 6) {
+            return 0;
+          } else {
+            return d.dx - 6;
+          }
+        });
 
       // Enter
       var cellEnter = cell.enter()
@@ -612,7 +622,7 @@ $(document).ready(function(){
             that.graphOrUpdate(d.name);
           })
           .on("mouseover", function(){
-            tooltip.html($(this).find('.treemap_text').text().replace(":","<br/>"));
+            tooltip.html($(this).find('.treemap_text').text().replace(/\:/g,"<br/>"));
             return tooltip.style("visibility", "visible");
           })
           .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+20)+"px");})
@@ -634,9 +644,10 @@ $(document).ready(function(){
         .text(function(d) {
           var msg = d.name;
           if(d.size){
-            msg += " : $";
+            msg += " : <div class='treemap_text_details'>$";
             msg += (d.size / 1000000).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
-            msg += " Billion";
+            msg += " Billion : ";
+            msg += ((d.size/d.parent.value) * 100).toFixed(2) + "% of total</div>";
           }
           return msg;
         })
@@ -654,7 +665,16 @@ $(document).ready(function(){
         .style("fill", "white")
         .style("opacity", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; })
         .style("width", function(d){ return d.dx;})
-        .attr("textLength", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? d.w : d.dx - 6;});
+        .attr("textLength", function(d){
+          d.w = this.getComputedTextLength();
+          if(d.dx > d.w){
+            return d.w;
+          } else if(d.dx < 6) {
+            return 0;
+          } else {
+            return d.dx - 6;
+          }
+        });
 
       // Exit
       cell.exit()
