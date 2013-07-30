@@ -166,7 +166,7 @@ $(document).ready(function(){
     */
     advanceLevel: function(name){
       if(this.levelTracker === "budget"){
-        $('.agency').html("<strong>Agency:</strong> " + name);
+        $('.agency').html("<strong>Department:</strong> " + name);
         this.levelTracker = "agency";
         this.agencyTracker = name;
       } else if(this.levelTracker === "agency"){
@@ -591,7 +591,7 @@ $(document).ready(function(){
           if(d.size){
             msg += " : $";
             msg += (d.size / 1000000).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
-            msg += " BN";
+            msg += " Billion";
           }
           return msg;
         })
@@ -636,7 +636,7 @@ $(document).ready(function(){
           if(d.size){
             msg += " : $";
             msg += (d.size / 1000000).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
-            msg += " BN";
+            msg += " Billion";
           }
           return msg;
         })
