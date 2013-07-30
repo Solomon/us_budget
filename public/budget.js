@@ -596,13 +596,13 @@ $(document).ready(function(){
           return msg;
         })
         .style("fill-opacity", 0)
-        .attr("width", function(d){ return d.dx;});
+        .attr("textLength", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? d.w : d.dx;});
 
       cell.select(".label")
         .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
         .text(function(d) {return d.name;})
         .style("opacity", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; })
-        .attr("width", function(d){ return d.dx;});
+        .attr("textLength", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? d.w : d.dx - 6;});
 
       // Enter
       var cellEnter = cell.enter()
@@ -641,7 +641,8 @@ $(document).ready(function(){
           return msg;
         })
         .style("fill-opacity", 0)
-        .attr("width", function(d){ return d.dx;});
+        .style("width", function(d){ return d.dx;})
+        .attr("textLength", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? d.w : d.dx;});
 
       cellEnter.append("svg:text")
         .attr('x', 4)
@@ -652,7 +653,8 @@ $(document).ready(function(){
         .text(function(d) {return d.name;})
         .style("fill", "white")
         .style("opacity", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; })
-        .attr("width", function(d){ return d.dx;});
+        .style("width", function(d){ return d.dx;})
+        .attr("textLength", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? d.w : d.dx - 6;});
 
       // Exit
       cell.exit()
