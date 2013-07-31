@@ -1,117 +1,126 @@
-<link href='public/style.css' rel='stylesheet' type='text/css'>
-<link href='public/facebox.css' rel='stylesheet' type='text/css'>
-<div class='container'>
-  <div class='top_nav span12'>
-    <p>
-      <span class='title'>US Budget</span>
-      <span class='show_instructions hidden'>Show Instructions</span>
-      <div class='summary hidden'>
-        <ul class='yearly_summary'>
-          <li class='summary_year'></li>
-          <li class='summary_receipts'></li>
-          <li class='summary_expenses'></li>
-          <li class='summary_net'></li>
+<html>
+  <head>
+    <link href='public/style.css' rel='stylesheet' type='text/css'>
+    <link href='public/facebox.css' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='top_nav span12'>
+        <p>
+          <span class='title'>US Budget</span>
+          <span class='show_instructions hidden'>Show Instructions</span>
+          <div class='summary hidden'>
+            <ul class='yearly_summary'>
+              <li class='summary_year'></li>
+              <li class='summary_receipts'></li>
+              <li class='summary_expenses'></li>
+              <li class='summary_net'></li>
+            </ul>
+          </div>
+        </p>
+      </div>
+      <div class='year_picker span12'>
+        <ul>
+          <li class='year'>1980</li>
+          <li class='year'>1981</li>
+          <li class='year'>1982</li>
+          <li class='year'>1983</li>
+          <li class='year'>1984</li>
+          <li class='year'>1985</li>
+          <li class='year'>1986</li>
+          <li class='year'>1987</li>
+          <li class='year'>1988</li>
+          <li class='year'>1989</li>
+          <li class='year'>1990</li>
+          <li class='year'>1991</li>
+          <li class='year'>1992</li>
+          <li class='year'>1993</li>
+          <li class='year'>1994</li>
+          <li class='year'>1995</li>
+          <li class='year'>1996</li>
+          <li class='year'>1997</li>
+          <li class='year'>1998</li>
+          <li class='year'>1999</li>
+          <li class='year'>2000</li>
+          <li class='year'>2001</li>
+          <li class='year'>2002</li>
+          <li class='year'>2003</li>
+          <li class='year'>2004</li>
+          <li class='year'>2005</li>
+          <li class='year'>2006</li>
+          <li class='year'>2007</li>
+          <li class='year'>2008</li>
+          <li class='year'>2009</li>
+          <li class='year'>2010</li>
+          <li class='year'>2011</li>
+          <li class='year'>2012</li>
+          <li class='year'>2013</li>
         </ul>
       </div>
-    </p>
-  </div>
-  <div class='year_picker span12'>
-    <ul>
-      <li class='year'>1980</li>
-      <li class='year'>1981</li>
-      <li class='year'>1982</li>
-      <li class='year'>1983</li>
-      <li class='year'>1984</li>
-      <li class='year'>1985</li>
-      <li class='year'>1986</li>
-      <li class='year'>1987</li>
-      <li class='year'>1988</li>
-      <li class='year'>1989</li>
-      <li class='year'>1990</li>
-      <li class='year'>1991</li>
-      <li class='year'>1992</li>
-      <li class='year'>1993</li>
-      <li class='year'>1994</li>
-      <li class='year'>1995</li>
-      <li class='year'>1996</li>
-      <li class='year'>1997</li>
-      <li class='year'>1998</li>
-      <li class='year'>1999</li>
-      <li class='year'>2000</li>
-      <li class='year'>2001</li>
-      <li class='year'>2002</li>
-      <li class='year'>2003</li>
-      <li class='year'>2004</li>
-      <li class='year'>2005</li>
-      <li class='year'>2006</li>
-      <li class='year'>2007</li>
-      <li class='year'>2008</li>
-      <li class='year'>2009</li>
-      <li class='year'>2010</li>
-      <li class='year'>2011</li>
-      <li class='year'>2012</li>
-      <li class='year'>2013</li>
-    </ul>
-  </div>
-  <div class='clear'></div>
-  <div class='instructions span12'>
-    <p class='big'>What Is This For?</p>
-    <p>
-      The US Budget, arguably the most important document for understanding how our government functions, is completely innaccesible.
-    </p>
-    <p>
-      Most people have never seen the US Budget, and don't know to look for it. For the small percentage of people who search and find the budget, they will either find a pdf or csv file that offers no way to analyze the raw data in a summarized and intuitive form.
-    </p>
-    <p>
-      The goal of this project is to fix that, and educate people about how the US collects and spends money.
-    </p>
-    <p class='big'>What Can You Do With This?</p>
-    <p>
-      You can use this visualization to simply explore, or to find answers to questions you have about the budget. For example, check out how much the US spends on defense compared to at the height of the cold war. Also, see how much money we pay each year on government debt. Also, see how much money individuals contribute in taxes compared to corporations.
-    </p>
-    <p class='big'>Instructions</p>
-    <p>
-      Click on any year to see the budget for that year. You will see what is called at "Treemap Visualization." This visualization has lots of boxes, and the size of each box corresponds to the dollar amount spent on that budget item.
-    </p>
-    <p>
-      For any item in the visualization, click once to see a graph of how that item has changed over time. Click twice to go to the next level. For example, double click the department of justice to see a new treemap of the bureaus that make up the department of justice. Then, double click again to see the line items that make up a bureau.
-    </p>
-    <p>
-      If you want to see a list instead of the treemap, click toggle list right below the treemap to see a list of everything in the treemap.
-    </p>
-  </div>
-  <div class='backtrace span12'>
-    <ul>
-      <li class='agency'></li>
-      <li class='bureau'></li>
-    </ul>
-  </div>
-  <div class='chart_control span12 hidden'>
-    <ul class='type_chooser'>
-      <li class='chooser expense_chooser active'>Expenses</li>
-      <li class='chooser receipts_chooser'>Receipts</li>
-    </ul>
-    <ul class='inflation_chooser'>
-      <li class='normal_currency active'>Normal</li>
-      <li class='inflation_adjusted'>Inflation Adjusted</li>
-    </ul>
-    <br>
-  </div>
-  <div class='clear'></div>
-  <div class='span12' id='chart'></div>
-  <div class='toggle_section hidden'>
-    <p>Single click for a chart, double click for more details.</p>
-    <p class='toggle_list'>Toggle List</p>
-  </div>
-  <table class='expenses expense_table hidden'></table>
-  <div class='footer span12'>
-    Copyright 2013 by
-    <a href='http://www.solomonkahn.com'>Solomon Kahn</a>
-    <a href='http://www.twitter.com/solomonkahn'>@solomonkahn</a>
-  </div>
-</div>
-<script src='public/jquery-1.9.1.min.js' type='text/javascript'></script>
-<script src='public/d3.v3.min.js' type='text/javascript'></script>
-<script src='public/underscore-min.js' type='text/javascript'></script>
-<script src='public/facebox.js' type='text/javascript'></script>
-<script src='public/budget.js' type='text/javascript'></script>
+      <div class='clear'></div>
+      <div class='instructions span12'>
+        <p class='big'>What Is This For?</p>
+        <p>
+          The US Budget, arguably the most important document for understanding how our government functions, is completely innaccesible.
+        </p>
+        <p>
+          Most people have never seen the US Budget, and don't know to look for it. For the small percentage of people who search and find the budget, they will either find a pdf or csv file that offers no way to analyze the raw data in a summarized and intuitive form.
+        </p>
+        <p>
+          The goal of this project is to fix that, and educate people about how the US collects and spends money.
+        </p>
+        <p class='big'>What Can You Do With This?</p>
+        <p>
+          You can use this visualization to simply explore, or to find answers to questions you have about the budget. For example, check out how much the US spends on defense compared to at the height of the cold war. Also, see how much money we pay each year on government debt. Also, see how much money individuals contribute in taxes compared to corporations.
+        </p>
+        <p class='big'>Instructions</p>
+        <p>
+          Click on any year to see the budget for that year. You will see what is called at "Treemap Visualization." This visualization has lots of boxes, and the size of each box corresponds to the dollar amount spent on that budget item.
+        </p>
+        <p>
+          For any item in the visualization, click once to see a graph of how that item has changed over time. Click twice to go to the next level. For example, double click the department of justice to see a new treemap of the bureaus that make up the department of justice. Then, double click again to see the line items that make up a bureau.
+        </p>
+        <p>
+          If you want to see a list instead of the treemap, click toggle list right below the treemap to see a list of everything in the treemap.
+        </p>
+      </div>
+      <div class='backtrace span12'>
+        <ul>
+          <li class='agency'></li>
+          <li class='bureau'></li>
+        </ul>
+      </div>
+      <div class='chart_control span12 hidden'>
+        <ul class='type_chooser'>
+          <li class='chooser expense_chooser active'>Expenses</li>
+          <li class='chooser receipts_chooser'>Receipts</li>
+        </ul>
+        <ul class='inflation_chooser'>
+          <li class='normal_currency active'>Normal</li>
+          <li class='inflation_adjusted'>Inflation Adjusted</li>
+        </ul>
+        <br>
+      </div>
+      <div class='clear'></div>
+      <div class='span12' id='chart'></div>
+      <div class='toggle_section hidden'>
+        <p class='chart_instructions'>
+          Single click for a chart, double click for more details.
+        </p>
+        <p class='show_list'>Show List</p>
+        <p class='hide_list hidden'>Hide List</p>
+      </div>
+      <table class='expenses expense_table hidden'></table>
+      <div class='footer span12'>
+        Copyright 2013 by
+        <a href='http://www.solomonkahn.com'>Solomon Kahn</a>
+        <a href='http://www.twitter.com/solomonkahn'>@solomonkahn</a>
+      </div>
+    </div>
+    <script src='public/jquery-1.9.1.min.js' type='text/javascript'></script>
+    <script src='public/d3.v3.min.js' type='text/javascript'></script>
+    <script src='public/underscore-min.js' type='text/javascript'></script>
+    <script src='public/facebox.js' type='text/javascript'></script>
+    <script src='public/budget.js' type='text/javascript'></script>
+  </body>
+</html>
