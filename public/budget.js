@@ -41,7 +41,7 @@ $(document).ready(function(){
     loadExpenseLineItems: function(){
       var items = [];
       var that = this;
-      d3.csv('/us_budget_expenses_2013.csv', function(csv){
+      d3.csv('public/us_budget_expenses_2013.csv', function(csv){
         $.each(csv, function(row, data){
           items.push(data);
         });
@@ -56,7 +56,7 @@ $(document).ready(function(){
     loadIncomeLineItems: function(){
       var items = [];
       var that = this;
-      d3.csv('/us_budget_revenues_2013.csv', function(csv){
+      d3.csv('public/us_budget_revenues_2013.csv', function(csv){
         $.each(csv, function(row, data){
           items.push(data);
         });
