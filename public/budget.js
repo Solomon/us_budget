@@ -586,6 +586,7 @@ $(document).ready(function(){
           .style("fill", function(d) { return color(d.size * Math.random()); });
 
       cell.select(".treemap_text")
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
         .text(function(d) {
           var msg = d.name;
           if(d.size){
@@ -860,24 +861,11 @@ $(document).ready(function(){
     },
 
     showChartControl: function(){
-      $('.instructions').hide();
-      $('.show_instructions').show();
       $('.summary').show();
       $('.chart_control').show();
       $('#chart').show();
       $('.toggle_section').show();
       $('.backtrace').show();
-    },
-
-    showInstructions: function(){
-      $('.summary').hide();
-      $('.show_instructions').hide();
-      $('.chart_control').hide();
-      $('#chart').hide();
-      $('.toggle_section').hide();
-      $('.expense_table').hide();
-      $('.backtrace').hide();
-      $('.instructions').show();
     },
 
     removeChart: function(){
