@@ -526,8 +526,8 @@ $(document).ready(function(){
   // http://bost.ocks.org/mike/treemap/
   Budget.Display = {
     setupTreemap: function(data){
-      var w = 940,
-          h = 500,
+      var w = $(window).width()* 0.8 - 15,
+          h = w * (500/960),
           x = d3.scale.linear().range([0, w]),
           y = d3.scale.linear().range([0, h]),
           root,
