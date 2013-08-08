@@ -739,7 +739,7 @@ $(document).ready(function(){
       var net = receipts - expenses;
       $('.summary_year').html(Budget.State.yearTracker + " Summary:");
       $('.summary_expenses').html("Expenses - " + toDollar(expenses));
-      $('.summary_receipts').html("Receipts - " + toDollar(receipts));
+      $('.summary_receipts').html("Income - " + toDollar(receipts));
       $('.summary_net').html("Net - " + toDollar(net));
     },
 

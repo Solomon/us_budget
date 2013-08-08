@@ -16,6 +16,11 @@ body {
 
 .title_nav {
   border-bottom: 1px solid black;
+  padding-bottom: 7px;
+}
+
+.title_header {
+  margin-bottom: 7px;
 }
 
 .span12 {
@@ -162,7 +167,7 @@ g {
   cursor: default;
 }
 
-.show_list, .hide_lise {
+.show_list, .hide_list {
   cursor: pointer;
 }
 
