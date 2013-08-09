@@ -16,11 +16,17 @@ body {
 
 .title_nav {
   border-bottom: 1px solid black;
-  padding-bottom: 7px;
+  padding-bottom: 15px;
 }
 
 .title_header {
-  margin-bottom: 7px;
+  margin-bottom: 20px;
+}
+
+.title_text {
+  font-size: 18px;
+  line-height: 27px;
+  font-family: Georgia, serif;
 }
 
 .span12 {
@@ -136,6 +142,11 @@ li {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
+a.title {
+  text-decoration: none;
+  color: #463E3F;
+}
+
 
 .show_instructions {
   margin-left: 20px;
@@ -176,4 +187,12 @@ g {
   font-size: 14px;
   line-height: 22px;
   margin-top: 15px;
+}
+
+.expense_table tr {
+  cursor: pointer;
+}
+
+.expense_table td {
+  padding-bottom: 5px;
 }
