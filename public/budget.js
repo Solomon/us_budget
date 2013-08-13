@@ -888,8 +888,8 @@ $(document).ready(function(){
   Budget.Init.setup();
 
   // Set up facebox settings
-  $.facebox.settings.closeImage = '/closelabel.png';
-  $.facebox.settings.loadingImage = '/loading.gif';
+  $.facebox.settings.closeImage = 'public/closelabel.png';
+  $.facebox.settings.loadingImage = 'public/loading.gif';
 
   // Attach event listeners to the years
   $('.year').on("click", function(){
@@ -908,7 +908,8 @@ $(document).ready(function(){
 
   $('.type_chooser li').on("click", function(){
     $(this).addClass('active').siblings().removeClass('active');
-    Budget.State.typeTracker = this.textContent.toLowerCase();
+    var type = this.textContent.toLowerCase() == 'expenses' ? 'expenses' : 'receipts';
+    Budget.State.typeTracker = type;
     Budget.Display.updateTreemap();
   });
 
