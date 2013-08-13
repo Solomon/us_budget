@@ -526,7 +526,7 @@ $(document).ready(function(){
   // http://bost.ocks.org/mike/treemap/
   Budget.Display = {
     setupTreemap: function(data){
-      var w = $(window).width()* 0.8 - 15,
+      var w = $(window).width()* 0.7 - 15,
           h = w * (500/960),
           x = d3.scale.linear().range([0, w]),
           y = d3.scale.linear().range([0, h]),
@@ -536,6 +536,8 @@ $(document).ready(function(){
           that = this;
 
       color = d3.scale.category20c();
+      // color = d3.scale.linear().domain([1,5]).range(['brown', 'yellow']);
+
 
       tooltip = d3.select("#chart")
         .append("div")
@@ -573,6 +575,17 @@ $(document).ready(function(){
       };
       var nodes = treemap.nodes(filteredData);
 
+      var percentOfParent = function(d){
+        return (d.size / d.parent.value) * 100;
+      };
+
+      var cellColor = function(d){
+        // var percent = percentOfParent(d);
+        // return color(Math.round(percent/20));
+        return color(d.size);
+      };
+
+
       // Data Join
       cell = svg.selectAll("g")
           .data(nodes);
@@ -583,7 +596,7 @@ $(document).ready(function(){
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
           .attr("width", function(d) { return d.dx > 2 ? d.dx - 2 : d.dx; })
           .attr("height", function(d) { return d.dy > 2 ? d.dy - 2 : d.dy; })
-          .style("fill", function(d) { return color(d.size * Math.random()); });
+          .style("fill", function(d) { return cellColor(d); });
 
       cell.select(".treemap_text")
         .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
@@ -593,7 +606,7 @@ $(document).ready(function(){
             msg += " : <div class='treemap_text_details'>$";
             msg += (d.size / 1000000).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
             msg += " Billion : ";
-            msg += ((d.size/d.parent.value) * 100).toFixed(2) + "% of total</div>";
+            msg += percentOfParent(d).toFixed(2) + "% of total</div>";
           }
           return msg;
         })
@@ -635,7 +648,7 @@ $(document).ready(function(){
           .attr("class", "cell tooltip")
           .attr("width", function(d) { return d.dx > 2 ? d.dx - 2 : d.dx; })
           .attr("height", function(d) { return d.dy > 2 ? d.dy - 2 : d.dy; })
-          .style("fill", function(d) { return color(d.size * Math.random()); })
+          .style("fill", function(d) { return cellColor(d); })
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 
       cellEnter.append("svg:text")
@@ -648,7 +661,7 @@ $(document).ready(function(){
             msg += " : <div class='treemap_text_details'>$";
             msg += (d.size / 1000000).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
             msg += " Billion : ";
-            msg += ((d.size/d.parent.value) * 100).toFixed(2) + "% of total</div>";
+            msg += percentOfParent(d).toFixed(2) + "% of total</div>";
           }
           return msg;
         })
