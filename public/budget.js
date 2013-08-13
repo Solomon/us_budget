@@ -535,8 +535,8 @@ $(document).ready(function(){
           node,
           that = this;
 
-      color = d3.scale.category20c();
-      // color = d3.scale.linear().domain([1,5]).range(['brown', 'yellow']);
+      // color = d3.scale.category20c();
+      color = d3.scale.linear().domain([0,100]).range(['brown', 'yellow']);
 
 
       tooltip = d3.select("#chart")
@@ -576,13 +576,16 @@ $(document).ready(function(){
       var nodes = treemap.nodes(filteredData);
 
       var percentOfParent = function(d){
-        return (d.size / d.parent.value) * 100;
+        if(typeof d.parent === 'undefined'){
+          return 100;
+        } else {
+          return (d.size / d.parent.value) * 100;
+        }
       };
 
       var cellColor = function(d){
-        // var percent = percentOfParent(d);
-        // return color(Math.round(percent/20));
-        return color(d.size);
+        var percent = percentOfParent(d);
+        return color(percent);
       };
 
 
