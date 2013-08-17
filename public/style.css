@@ -24,7 +24,7 @@ body {
 }
 
 .title_text {
-  font-size: 18px;
+  font-size: 16px;
   line-height: 27px;
   font-family: Georgia, serif;
 }
@@ -51,7 +51,7 @@ body {
 }
 
 .area {
-  fill: #0CD5BF;
+  fill: #4ecdc4;
 }
 
 .tooltip {
@@ -64,7 +64,7 @@ body {
 }
 
 .active {
-  background: #4E9CB5;
+  background: #77cca4;
   color: white;
   padding: 5px;
   border-radius: 2px;
@@ -163,7 +163,7 @@ a.title {
 }
 
 .year:hover, .type_chooser li:hover, .inflation_chooser li:hover {
-  background: #4E9CB5;
+  background: #77cca4;
   color: white;
   padding: 5px;
   border-radius: 2px;
