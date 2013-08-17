@@ -770,7 +770,7 @@ $(document).ready(function(){
 
     setupAreaChart: function(data){
 
-      var margin = {top: 20, right: 20, bottom: 30, left: 100},
+      var margin = {top: 20, right: 20, bottom: 30, left: 40},
           width = 960 - margin.left - margin.right,
           height = 500 - margin.top - margin.bottom;
 
@@ -793,7 +793,7 @@ $(document).ready(function(){
       var area = d3.svg.area()
           .x(function(d) { return x(d.date); })
           .y0(height)
-          .y1(function(d) { return y(d.amount); });
+          .y1(function(d) { return y(d.amount/1000000); });
 
       var tooltip = d3.select("#area_graph")
           .append("div")
@@ -813,7 +813,7 @@ $(document).ready(function(){
       y.domain(
         [
           _.min([ minAmount ,0 ]),
-          d3.max(data, function(d) { return d.amount; })
+          d3.max(data, function(d) { return d.amount/1000000; })
         ]
       );
 
@@ -835,7 +835,8 @@ $(document).ready(function(){
             var msg = d.date.getFullYear().toString();
             if(d.amount){
               msg += " - $";
-              msg += d.amount.toFixed(0).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
+              msg += (d.amount/1000000).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
+              msg += " Billion";
             }
             return msg;
           })
@@ -863,7 +864,7 @@ $(document).ready(function(){
           .attr("y", 6)
           .attr("dy", ".71em")
           .style("text-anchor", "end")
-          .text("Thousands ($)");
+          .text("Billions ($)");
     },
 
     updateAreaChart: function(name){
