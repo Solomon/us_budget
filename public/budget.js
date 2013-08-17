@@ -733,13 +733,15 @@ $(document).ready(function(){
     populateList: function(f){
       var expenseList = $('.expenses');
       expenseList.children().remove();
+      var tableHeaders = "<tr><td><strong>Department</strong></td><td><strong>Amount (billions)</strong></td></tr>";
+      expenseList.append(tableHeaders);
       var s = _.sortBy(f, function(n){ return -1 * n.size;});
       _.each(s, function(e){
         var expense = "<tr><td>" + e.name + "</td><td>" + toDollar(e.size) + "</td></tr>";
         expenseList.append(expense);
       });
       var total = totalAmount(f);
-      expenseList.append("<tr><td>Total</td><td>" + toDollar(total) + "</td></tr>");
+      expenseList.append("<tr><td><strong>Total</strong></td><td><strong>" + toDollar(total) + "</strong></td></tr>");
     },
 
     setTreemapBackgroundToWhite: function(){
@@ -762,10 +764,10 @@ $(document).ready(function(){
       var expenses = totalAmount(Budget.Expenses.getYearlyExpenses(year));
       var receipts = totalAmount(Budget.Receipts.yearlyReceipts(year));
       var net = receipts - expenses;
-      $('.summary_year').html(Budget.State.yearTracker + " Summary:");
-      $('.summary_expenses').html("Expenses - " + toDollar(expenses));
-      $('.summary_receipts').html("Income - " + toDollar(receipts));
-      $('.summary_net').html("Net - " + toDollar(net));
+      $('.summary_year').html("<strong>"+ Budget.State.yearTracker + " Summary:</strong>");
+      $('.summary_expenses').html("Expenses - " + toDollarSummary(expenses));
+      $('.summary_receipts').html("Income - " + toDollarSummary(receipts));
+      $('.summary_net').html("Net - " + toDollarSummary(net));
     },
 
     setupAreaChart: function(data){
@@ -901,9 +903,12 @@ $(document).ready(function(){
   };
 
   var toDollar = function(d){
-    return "$" + d.toFixed(0).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
+    return "$" + (d/1000000).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
   };
 
+  var toDollarSummary = function(d){
+    return "$" + (d/1000000).toFixed(0).replace(/(\d)(?=(\d{3})+\b)/g,'$1,') + " Billion";
+  };
 
   var totalAmount = function(f){
     return _.reduce(f, function(total, expense){
