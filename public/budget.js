@@ -894,6 +894,7 @@ $(document).ready(function(){
       $('#chart').show();
       $('.toggle_section').show();
       $('.backtrace').show();
+      $('.mailing_list').show();
     },
 
     removeChart: function(){

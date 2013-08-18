@@ -197,7 +197,6 @@ g {
   padding-bottom: 5px;
 }
 
-.BrBG .q1-5{fill:rgb(223,194,125)}
-.BrBG .q2-5{fill:rgb(245,245,245)}
-.BrBG .q3-5{fill:rgb(128,205,193)}
-.BrBG .q4-5{fill:rgb(1,133,113)}
+.aweber_form {
+  width: 400px;
+}
