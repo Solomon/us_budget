@@ -3,6 +3,40 @@ body {
   margin: 0;
 }
 
+.nav_header {
+  background: #463E3F;
+  height: 100px;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.nav_header_wrap {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.main_website_title {
+  float: left;
+  color: white;
+  font-size: 48px;
+  font-family: Georgia, serif;
+  margin-top: 30px;
+}
+
+.main_website_title a {
+  font-family: Georgia, serif;
+}
+
+.main_navbar_links {
+  float:right;
+  margin-top: 45px;
+}
+
+.main_navbar_links li {
+  margin-left: 15px;
+}
+
 .container {
   width: 70%;
   background-color: white;
@@ -144,7 +178,8 @@ li {
 
 a.title {
   text-decoration: none;
-  color: #463E3F;
+  /*color: #463E3F;*/
+  color: inherit;
 }
 
 
