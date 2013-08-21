@@ -538,12 +538,12 @@ $(document).ready(function(){
       // color = d3.scale.category20c();
       //color = d3.scale.linear().domain([0,100]).range(['brown', 'yellow']);
 
-      var pallete6 = ["#c44d58", "#ff6b6b", "#77cca4", "#4ecdc4", "#556270", "#88419d", "#6a4a3c"];
-      var pallete8 = ["#cc333f", "#edc951", "#eb6841", "#6a4a3c", "#00a0b0"];
+      var palette = ["#c44d58", "#ff6b6b", "#77cca4", "#4ecdc4", "#556270", "#88419d", "#6a4a3c"];
+      var palette2 = ["#cc333f", "#edc951", "#eb6841", "#6a4a3c", "#00a0b0"];
 
       color = d3.scale.threshold()
         .domain([1,2,7,15,20,40, 101])
-        .range(pallete6.reverse());
+        .range(palette.reverse());
         //.range(colorbrewer.BuPu[7]);
 
 

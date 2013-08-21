@@ -5,7 +5,7 @@ body {
 
 .nav_header {
   background: #463E3F;
-  height: 100px;
+  height: 80px;
   color: white;
   margin-bottom: 30px;
 }
@@ -19,9 +19,8 @@ body {
 .main_website_title {
   float: left;
   color: white;
-  font-size: 48px;
   font-family: Georgia, serif;
-  margin-top: 30px;
+  margin-top: 25px;
 }
 
 .main_website_title a {
@@ -30,11 +29,17 @@ body {
 
 .main_navbar_links {
   float:right;
-  margin-top: 45px;
+  margin-top: 35px;
+  font-size: 16px;
 }
 
 .main_navbar_links li {
   margin-left: 15px;
+}
+
+.main_navbar_links a {
+  text-decoration: none;
+  color: white;
 }
 
 .container {
@@ -59,8 +64,9 @@ body {
 
 .title_text {
   font-size: 16px;
-  line-height: 27px;
+  line-height: 25px;
   font-family: Georgia, serif;
+  margin: 10px 0;
 }
 
 .span12 {
@@ -72,10 +78,14 @@ body {
 
 .year {
   padding: 5px;
-  margin: 4px;
-  line-height: 24px;
+  background: #556270;
+  color: white;
+  margin: 15px 8px;
+  line-height: 34px;
   cursor: pointer;
   font-family: "Times New Roman", Times, serif;
+  border-radius: 3px;
+  box-shadow 10px 10px 10px black;
 }
 
 #chart {
@@ -160,6 +170,7 @@ li {
   margin-top: 15px;
   padding-top: 10px;
   border-top: 1px solid black;
+  font-size: 16px;
 }
 
 .big {
@@ -172,7 +183,7 @@ li {
 }
 
 .title {
-  font-size: 32px;
+  font-size: 28px;
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
