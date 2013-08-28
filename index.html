@@ -97,17 +97,19 @@
           <li class='chooser receipts_chooser'>Income</li>
         </ul>
         <ul class='inflation_chooser'>
-          <li class='normal_currency active'>Normal</li>
-          <li class='inflation_adjusted'>Inflation Adjusted</li>
-          <li class='inflation_adjusted'>Per Capita</li>
+          <li class='currency_chooser normal_currency active'>Plain Dollars</li>
+          <li class='currency_chooser inflation_adjusted'>Inflation Adjusted</li>
+          <li class='currency_chooser inflation_adjusted'>Per Capita</li>
         </ul>
         <br>
       </div>
       <div class='clear'></div>
       <div class='span12' id='chart'></div>
       <div class='toggle_section hidden'>
-        <p class='show_list'>Show List</p>
-        <p class='hide_list hidden'>Hide List</p>
+        <ul>
+          <li class='show_list'>Show List</li>
+          <li class='hide_list hidden'>Hide List</li>
+        </ul>
         <p class='chart_instructions'>
           Single click for a chart, double click for more details.
         </p>
@@ -134,7 +136,6 @@
     <script src='public/d3.v3.min.js' type='text/javascript'></script>
     <script src='public/underscore-min.js' type='text/javascript'></script>
     <script src='public/facebox.js' type='text/javascript'></script>
-    <script src='public/colorbrewer.js' type='text/javascript'></script>
     <script src='public/budget.js' type='text/javascript'></script>
   </body>
 </html>

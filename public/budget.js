@@ -611,7 +611,6 @@ $(document).ready(function(){
       color = d3.scale.threshold()
         .domain([1,2,7,15,20,40, 101])
         .range(palette.reverse());
-        //.range(colorbrewer.BuPu[7]);
 
 
       tooltip = d3.select("#chart")
@@ -1041,7 +1040,7 @@ $(document).ready(function(){
     $(this).addClass('active').siblings().removeClass('active');
     if (this.textContent === "Inflation Adjusted") {
       Budget.State.moneyTracker = "inflation";
-    } else if(this.textContent === "Normal"){
+    } else if(this.textContent === "Plain Dollars"){
       Budget.State.moneyTracker = "normal";
     } else if(this.textContent === "Per Capita"){
       Budget.State.moneyTracker = "per_capita";

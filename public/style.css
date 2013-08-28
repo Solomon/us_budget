@@ -107,13 +107,6 @@ body {
   border-radius: 5px;
 }
 
-.active {
-  background: #77cca4;
-  color: white;
-  padding: 5px;
-  border-radius: 2px;
-}
-
 .hidden {
   display: none;
 }
@@ -134,6 +127,28 @@ ul {
 
 .chart_control {
   margin: 20px 0 10px 0;
+}
+
+.chooser, .currency_chooser, .show_list, .hide_list {
+  padding: 5px;
+  background: #556270;
+  color: white;
+  border-radius: 2px;
+}
+
+.chooser {
+  margin-right: 10px;
+}
+
+.currency_chooser {
+  margin-left: 10px;
+}
+
+.active {
+  background: #77cca4;
+  color: white;
+  padding: 5px;
+  border-radius: 2px;
 }
 
 .chart_title {
@@ -189,7 +204,6 @@ li {
 
 a.title {
   text-decoration: none;
-  /*color: #463E3F;*/
   color: inherit;
 }
 
@@ -208,7 +222,8 @@ a.title {
   cursor: pointer;
 }
 
-.year:hover, .type_chooser li:hover, .inflation_chooser li:hover {
+.year:hover, .type_chooser li:hover, .inflation_chooser li:hover,
+.show_list:hover, .hide_list:hover{
   background: #77cca4;
   color: white;
   padding: 5px;
@@ -226,6 +241,7 @@ g {
 
 .show_list, .hide_list {
   cursor: pointer;
+  width: 75px;
 }
 
 .treemap_text_details {
