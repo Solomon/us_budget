@@ -731,7 +731,9 @@ $(document).ready(function(){
             tooltip.html($(this).find('.treemap_text').text().replace(/\:/g,"<br/>"));
             return tooltip.style("visibility", "visible");
           })
-          .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+20)+"px");})
+          .on("mousemove", function(){
+            return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+20)+"px");
+          })
           .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
       cellEnter.append("svg:rect")
@@ -927,8 +929,8 @@ $(document).ready(function(){
             return tooltip.style("visibility", "visible");
           })
           .on("mousemove", function(){
-            var top = event.pageY - parseInt($('#facebox').css('top'), 10);
-            var left = event.pageX - parseInt($('#facebox').css('left'), 10);
+            var top = d3.event.pageY - parseInt($('#facebox').css('top'), 10);
+            var left = d3.event.pageX - parseInt($('#facebox').css('left'), 10);
             return tooltip.style("top", (top -20)+"px").style("left",(left + 20)+"px");
           })
           .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
