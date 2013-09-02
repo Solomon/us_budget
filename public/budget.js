@@ -846,24 +846,57 @@ $(document).ready(function(){
       var y = d3.scale.linear()
           .range([height, 0]);
 
+      var minAmount = d3.min(data, function(d) {
+        if(Budget.State.moneyTracker === "per_capita"){
+          return d.amount;
+        } else {
+          return d.amount/1000000;
+        }
+      });
+      var maxAmount = d3.max(data, function(d) {
+        if(Budget.State.moneyTracker === "per_capita"){
+          return d.amount;
+        } else {
+          return d.amount/1000000;
+        }
+      });
+
       var xAxis = d3.svg.axis()
-          .scale(x)
-          .orient(y(0));
+          .scale(x);
 
       var yAxis = d3.svg.axis()
           .scale(y)
           .orient("left");
 
-      var minAmount = d3.min(data, function(d) { return d.amount; });
+      var yDomain = function(minimum, maximum){
+        if(maximum > 0){
+          return [_.min([minimum, 0]), maximum];
+        } else {
+          return [minimum, 0];
+        }
+      };
+
+      x.domain(d3.extent(data, function(d) { return d.date; }));
+      y.domain(yDomain(minAmount, maxAmount));
 
       var area = d3.svg.area()
           .x(function(d) { return x(d.date); })
-          .y0(height)
-          .y1(function(d) {
-            if(Budget.State.moneyTracker === "per_capita"){
-              return y(d.amount);
-            } else {
+          .y0(function(d){
+            if(d.amount < 0) {
               return y(d.amount/1000000);
+            } else {
+              return y(0);
+            }
+          })
+          .y1(function(d) {
+            if(d.amount < 0){
+              return y(0);
+            } else {
+              if(Budget.State.moneyTracker === "per_capita"){
+                return y(d.amount);
+              } else {
+                return y(d.amount/1000000);
+              }
             }
           });
 
@@ -881,19 +914,6 @@ $(document).ready(function(){
           .append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      x.domain(d3.extent(data, function(d) { return d.date; }));
-      y.domain(
-        [
-          _.min([ minAmount ,0 ]),
-          d3.max(data, function(d) { 
-            if(Budget.State.moneyTracker === "per_capita"){
-              return d.amount;
-            } else {
-              return d.amount/1000000;
-            }
-          })
-        ]
-      );
 
       svg.append("path")
           .datum(data)
@@ -934,9 +954,10 @@ $(document).ready(function(){
           })
           .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
+      var xAxisTransform = minAmount < 0 ? y(0) : height;
       svg.append("g")
           .attr("class", "x axis")
-          .attr("transform", "translate(0," + height + ")")
+          .attr("transform", "translate(0," + xAxisTransform + ")")
           .call(xAxis);
 
       svg.append("g")
