@@ -129,20 +129,20 @@ ul {
   margin: 20px 0 10px 0;
 }
 
-.chooser, .currency_chooser, .show_list, .hide_list {
+.chooser, .currency_chooser, .capita_chooser, .show_list, .hide_list {
   padding: 5px;
   background: #556270;
   color: white;
   border-radius: 2px;
 }
 
-.chooser {
+.chooser, .currency_chooser, .capita_chooser {
   margin-right: 10px;
 }
 
-.currency_chooser {
-  margin-left: 10px;
-}
+/*.currency_chooser {*/
+  /*margin-left: 10px;*/
+/*}*/
 
 .active {
   background: #77cca4;
@@ -155,15 +155,12 @@ ul {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
-.type_chooser {
-  float: left;
+.state_chooser{
   cursor: pointer;
+  margin-right: 10px;
+  float:left;
 }
 
-.inflation_chooser {
-  float: right;
-  cursor: pointer;
-}
 
 li {
   display: inline;
@@ -223,11 +220,15 @@ a.title {
 }
 
 .year:hover, .type_chooser li:hover, .inflation_chooser li:hover,
-.show_list:hover, .hide_list:hover{
+.show_list:hover, .hide_list:hover, .capita_chooser_list li:hover{
   background: #77cca4;
   color: white;
   padding: 5px;
   border-radius: 2px;
+}
+
+.capita_chooser_list, .type_chooser {
+  border-right: 1px solid black;
 }
 
 g {

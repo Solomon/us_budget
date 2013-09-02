@@ -70,6 +70,7 @@ $(document).ready(function(){
         expenseLineItems = items;
         inflationExpenseItems = that.adjustForInflation(items);
         perCapitaExpenseItems = that.adjustPerCapita(items);
+        perCapitaInflationExpenseItems = that.adjustPerCapita(inflationExpenseItems);
       });
     },
 
@@ -86,6 +87,7 @@ $(document).ready(function(){
         incomeLineItems = items;
         inflationIncomeItems = that.adjustForInflation(items);
         perCapitaIncomeItems = that.adjustPerCapita(items);
+        perCapitaInflationIncomeItems = that.adjustPerCapita(inflationIncomeItems);
       });
     }
   };
@@ -103,6 +105,7 @@ $(document).ready(function(){
     yearTracker: '2011',
     typeTracker: "expenses",
     moneyTracker: "normal",
+    capitaTracker: "total",
     treemapClicks: 0,
 
     /*
@@ -148,12 +151,18 @@ $(document).ready(function(){
     * Get the current expense items based on the inflation tracker
     */
     currentExpenseItems: function(){
-      if(this.moneyTracker === "normal"){
-        return expenseLineItems;
-      } else if(this.moneyTracker === "inflation"){
-        return inflationExpenseItems;
-      } else if(this.moneyTracker === "per_capita"){
-        return perCapitaExpenseItems;
+      if(this.capitaTracker === "total"){
+        if(this.moneyTracker === "normal"){
+          return expenseLineItems;
+        } else if(this.moneyTracker === "inflation"){
+          return inflationExpenseItems;
+        }
+      } else if(this.capitaTracker === "per_capita") {
+        if(this.moneyTracker === "normal"){
+          return perCapitaExpenseItems;
+        } else if(this.moneyTracker === "inflation"){
+          return perCapitaInflationExpenseItems;
+        }
       }
     },
 
@@ -161,12 +170,18 @@ $(document).ready(function(){
     * Get the current income items based on the inflation tracker
     */
     currentIncomeItems: function(){
-      if(this.moneyTracker === "normal"){
-        return incomeLineItems;
-      } else if(this.moneyTracker === "inflation"){
-        return inflationIncomeItems;
-      } else if(this.moneyTracker === "per_capita"){
-        return perCapitaIncomeItems;
+      if(this.capitaTracker === "total"){
+        if(this.moneyTracker === "normal"){
+          return incomeLineItems;
+        } else if(this.moneyTracker === "inflation"){
+          return inflationIncomeItems;
+        }
+      } else if(this.capitaTracker === "per_capita") {
+        if(this.moneyTracker === "normal"){
+          return perCapitaIncomeItems;
+        } else if(this.moneyTracker === "inflation"){
+          return perCapitaInflationIncomeItems;
+        }
       }
     },
     /*
@@ -664,7 +679,7 @@ $(document).ready(function(){
 
       var tooltipMessage = function(d){
         var msg = d.name;
-        if(Budget.State.moneyTracker === "per_capita"){
+        if(Budget.State.capitaTracker === "per_capita"){
           if(d.size){
             msg += " : <div class='treemap_text_details'>$";
             msg += (d.size).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
@@ -796,7 +811,7 @@ $(document).ready(function(){
     populateList: function(f){
       var expenseList = $('.expenses');
       expenseList.children().remove();
-      var amountUnit = Budget.State.moneyTracker === "per_capita" ? "per person" : "billions";
+      var amountUnit = Budget.State.capitaTracker === "per_capita" ? "per person" : "billions";
       var tableHeaders = "<tr><td><strong>Department</strong></td><td><strong>Amount (" + amountUnit + ")</strong></td></tr>";
       expenseList.append(tableHeaders);
       var s = _.sortBy(f, function(n){ return -1 * n.size;});
@@ -847,14 +862,14 @@ $(document).ready(function(){
           .range([height, 0]);
 
       var minAmount = d3.min(data, function(d) {
-        if(Budget.State.moneyTracker === "per_capita"){
+        if(Budget.State.capitaTracker === "per_capita"){
           return d.amount;
         } else {
           return d.amount/1000000;
         }
       });
       var maxAmount = d3.max(data, function(d) {
-        if(Budget.State.moneyTracker === "per_capita"){
+        if(Budget.State.capitaTracker === "per_capita"){
           return d.amount;
         } else {
           return d.amount/1000000;
@@ -892,7 +907,7 @@ $(document).ready(function(){
             if(d.amount < 0){
               return y(0);
             } else {
-              if(Budget.State.moneyTracker === "per_capita"){
+              if(Budget.State.capitaTracker === "per_capita"){
                 return y(d.amount);
               } else {
                 return y(d.amount/1000000);
@@ -933,7 +948,7 @@ $(document).ready(function(){
             var msg = d.date.getFullYear().toString();
             if(d.amount){
               msg += " - $";
-              if(Budget.State.moneyTracker === "per_capita"){
+              if(Budget.State.capitaTracker === "per_capita"){
                 msg += (d.amount).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
                 msg += " Per Person";
               } else {
@@ -969,7 +984,7 @@ $(document).ready(function(){
           .attr("dy", ".71em")
           .style("text-anchor", "end")
           .text(function(){
-            if(Budget.State.moneyTracker === "per_capita"){
+            if(Budget.State.capitaTracker === "per_capita"){
               return "Per Person ($)";
             } else { 
               return "Billions ($)";
@@ -1012,7 +1027,7 @@ $(document).ready(function(){
   };
 
   var toDollar = function(d){
-    if(Budget.State.moneyTracker === "per_capita"){
+    if(Budget.State.capitaTracker === "per_capita"){
       return "$" + (d).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
     } else {
       return "$" + (d/1000000).toFixed(2).replace(/(\d)(?=(\d{3})+\b)/g,'$1,');
@@ -1063,8 +1078,22 @@ $(document).ready(function(){
       Budget.State.moneyTracker = "inflation";
     } else if(this.textContent === "Plain Dollars"){
       Budget.State.moneyTracker = "normal";
+    }
+    if(Budget.State.atBudgetLevel()){
+      Budget.Display.updateTreemap();
+    } else {
+      var treemapName = Budget.State.lastItem;
+      Budget.Display.updateTreemap(treemapName, true);
+    }
+  });
+
+
+  $('.capita_chooser_list li').on("click", function(){
+    $(this).addClass('active').siblings().removeClass('active');
+    if (this.textContent === "Total") {
+      Budget.State.capitaTracker = "total";
     } else if(this.textContent === "Per Capita"){
-      Budget.State.moneyTracker = "per_capita";
+      Budget.State.capitaTracker = "per_capita";
     }
     if(Budget.State.atBudgetLevel()){
       Budget.Display.updateTreemap();
