@@ -1052,16 +1052,25 @@ $(document).ready(function(){
 
   // Attach event listeners to the years
   $('.year').on("click", function(){
-    $(this).addClass('active').siblings().removeClass('active');
-    // Budget.Display.removeChart();
-    Budget.Display.showChartControl();
-    Budget.State.yearTracker = $(this).text();
-    Budget.Display.populateYearlySummary(Budget.State.yearTracker);
-    if(Budget.State.atBudgetLevel()){
-      Budget.Display.updateTreemap();
+    if(typeof expenseLineItems === "undefined"){
+      var clickedYear = $(this).text();
+      var that = $(this);
+      $(this).html("loading");
+      setTimeout(function(){
+       that.html(clickedYear);
+      },5000);
     } else {
-      var treemapName = Budget.State.lastItem;
-      Budget.Display.updateTreemap(treemapName, true);
+      $(this).addClass('active').siblings().removeClass('active');
+      // Budget.Display.removeChart();
+      Budget.Display.showChartControl();
+      Budget.State.yearTracker = $(this).text();
+      Budget.Display.populateYearlySummary(Budget.State.yearTracker);
+      if(Budget.State.atBudgetLevel()){
+        Budget.Display.updateTreemap();
+      } else {
+        var treemapName = Budget.State.lastItem;
+        Budget.Display.updateTreemap(treemapName, true);
+      }
     }
   });
 
