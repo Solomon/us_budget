@@ -709,30 +709,32 @@ $(document).ready(function(){
         }
       };
 
-
+      // Constancy
       // Data Join
       cell = svg.selectAll("g")
-          .data(nodes);
+          .data(nodes, function(d) { return d.name; });
 
       // Update
-      cell.select("rect").
-        transition().duration(2000)
+      cell.select("rect")
+        .transition().duration(2000)
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
           .attr("width", function(d) { return d.dx > 2 ? d.dx - 2 : d.dx; })
           .attr("height", function(d) { return d.dy > 2 ? d.dy - 2 : d.dy; })
           .style("fill", function(d) { return cellColor(d); });
 
       cell.select(".treemap_text")
-        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-        .text(function(d) {return tooltipMessage(d);})
-        .style("fill-opacity", 0)
-        .attr("textLength", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? d.w : d.dx;});
+        .transition().duration(2000)
+          .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+          .text(function(d) {return tooltipMessage(d);})
+          .style("fill-opacity", 0)
+          .attr("textLength", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? d.w : d.dx;});
 
       cell.select(".label")
-        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-        .text(function(d) {return d.name;})
-        .style("opacity", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; })
-        .attr("textLength", function(d){ return labelWidth(d, this); });
+        .transition().duration(2000)
+          .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+          .text(function(d) {return d.name;})
+          .style("opacity", function(d){ d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; })
+          .attr("textLength", function(d){ return labelWidth(d, this); });
 
       // Enter
       var cellEnter = cell.enter()
@@ -784,6 +786,9 @@ $(document).ready(function(){
       cell.exit()
         .remove();
 
+      if($('.bucket').length > 1) {
+        $('.bucket:contains(' + data.name + ')')[0].remove();
+      }
     },
 
     updateTreemap: function(name, noAdvance){
@@ -823,9 +828,10 @@ $(document).ready(function(){
       expenseList.append("<tr><td><strong>Total</strong></td><td><strong>" + toDollar(total) + "</strong></td></tr>");
     },
 
-    setTreemapBackgroundToWhite: function(){
+    setTreemapBackgroundToWhite: function(name){
+      //$('.bucket:contains(name)')[0].remove();
       // if($('.cell').length > 1){
-        $('.bucket').first().remove();
+        //$('.bucket').first().remove();
       // }
     },
 
@@ -835,7 +841,7 @@ $(document).ready(function(){
         this.setupTreemap(d);
       }
       this.updateTreemapData(d);
-      this.setTreemapBackgroundToWhite();
+      this.setTreemapBackgroundToWhite(d.name);
       this.populateList(d.children);
     },
 
