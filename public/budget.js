@@ -302,9 +302,12 @@ $(document).ready(function(){
     * Get the agency, bureau, and account name from a single line item
     */
     expenseOrigin: function(item){
-      return {"agencyName" : item['Agency Name'],
-              "bureauName" : item['Bureau Name'],
-              "name" : item['Account Name']};
+      return {
+        "agencyName" : item['Agency Name'],
+        "bureauName" : item['Bureau Name'],
+        "name" : item['Account Name'],
+        "uniqueName" : item['Unique']
+      };
     },
 
     /*
@@ -710,9 +713,24 @@ $(document).ready(function(){
       };
 
       // Constancy
+      //
+      // There can be multiple line items with the same name, some corresponding to
+      // discretionary vs mandatory, some with different subfunctions. This is only
+      // an issue for the bureau view, so I added a unique column to the csv which
+      // is all the different other columns concatenated. If we use this unique
+      // name as the constancy key for bureaus, we ensure uniqueness and that all
+      // the right boxes will show up.
+      var constancyKey = function(d){
+        if(Budget.State.levelTracker == "bureau") {
+          return d.uniqueName;
+        } else {
+          return d.name;
+        }
+      };
+
       // Data Join
       cell = svg.selectAll("g")
-          .data(nodes, function(d) { return d.name; });
+          .data(nodes, function(d) { return constancyKey(d); });
 
       // Update
       cell.select("rect")
@@ -786,8 +804,10 @@ $(document).ready(function(){
       cell.exit()
         .remove();
 
+      // This removes the 100% visualization blocking parent node
       if($('.bucket').length > 1) {
-        $('.bucket:contains(' + data.name + ')')[0].remove();
+        backgroundBucket = $('.bucket:contains(' + data.name + ')')[0];
+        backgroundBucket.remove();
       }
     },
 
