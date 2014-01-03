@@ -1024,6 +1024,7 @@ $(document).ready(function(){
       $('.toggle_section').show();
       $('.backtrace').show();
       $('.mailing_list').show();
+      $('.sources').show();
     },
 
     removeChart: function(){
