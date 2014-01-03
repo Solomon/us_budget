@@ -807,7 +807,14 @@ $(document).ready(function(){
       // This removes the 100% visualization blocking parent node
       if($('.bucket').length > 1) {
         backgroundBucket = $('.bucket:contains(' + data.name + ')')[0];
-        backgroundBucket.remove();
+        try {
+          backgroundBucket.remove();
+        } catch(err){
+          setTimeout(function(){
+            backgroundBucket = $('.bucket:contains(' + data.name + ')')[0];
+            backgroundBucket.remove();
+          }, 500);
+        }
       }
     },
 
