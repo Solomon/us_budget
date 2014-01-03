@@ -313,7 +313,7 @@ $(document).ready(function(){
     */
     getYearlyLineItem: function(item, year){
       var lineItem = this.expenseOrigin(item);
-      lineItem.size = parseInt(item[year].replace(/\,/g,''),10);
+      lineItem.size = parseFloat(item[year].replace(/\,/g,''));
       return lineItem;
     },
 
@@ -341,7 +341,7 @@ $(document).ready(function(){
       var years = _.range(1976, 2013);
       _.each(years, function(y){
         var amount = _.reduce(rows,function(sum, r){
-          return sum + parseInt(r[y].replace(/\,/g,''), 10);
+          return sum + parseFloat(r[y].replace(/\,/g,''));
         },0);
         var year = '1/1/' + y;
         var period = new Date(year);
@@ -489,7 +489,7 @@ $(document).ready(function(){
       var years = _.range(1976, 2013);
       _.each(years, function(y){
         var amount = _.reduce(rows,function(sum, r){
-          return sum + parseInt(r[y].replace(/\,/g,''), 10);
+          return sum + parseFloat(r[y].replace(/\,/g,''));
         },0);
         var year = '1/1/' + y;
         var period = new Date(year);
@@ -508,7 +508,7 @@ $(document).ready(function(){
 
     receiptForYear: function(receipt, year){
       var receiptItem = this.receiptItem(receipt);
-      receiptItem.size = parseInt(receipt[year].replace(/\,/g,''), 10);
+      receiptItem.size = parseFloat(receipt[year].replace(/\,/g,''));
       return receiptItem;
     },
 
