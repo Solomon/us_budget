@@ -505,7 +505,8 @@ $(document).ready(function(){
       return {
         "agencyName" : item["Agency name"],
         "bureauName" : item["Bureau name"],
-        "name" : item["Account name"]
+        "name" : item["Account name"],
+        "uniqueName" : item['Unique']
       };
     },
 
