@@ -809,11 +809,13 @@ $(document).ready(function(){
       if($('.bucket').length > 1) {
         backgroundBucket = $('.bucket:contains(' + data.name + ')')[0];
         try {
-          backgroundBucket.remove();
+          //backgroundBucket.remove();
+          backgroundBucket.parentNode.removeChild(backgroundBucket);
         } catch(err){
           setTimeout(function(){
             backgroundBucket = $('.bucket:contains(' + data.name + ')')[0];
-            backgroundBucket.remove();
+            //backgroundBucket.remove();
+            backgroundBucket.parentNode.removeChild(backgroundBucket);
           }, 500);
         }
       }
