@@ -1178,4 +1178,6 @@ $(document).ready(function(){
     $('.show_list').show();
   });
 
+  $('.copyright').html((new Date).getFullYear());
+
 });
